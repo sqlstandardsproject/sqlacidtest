@@ -15,5 +15,10 @@ select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as o
 (10,'|....##.....##....|'),
 (11,'|......#####......|'),
 (12,'+-----------------+')
-) image(line, image) left outer join (select line, sum(cast(power(2,ofs) as integer)) as state from (select line, test-1-20*line as ofs, test, result from (select cast((test-1)/20 as integer) as line, test, result from testresults) s) s group by line) s on image.line=s.line order by image.line;
+) image(line, image) left outer join (
+select line, sum(cast(power(2,ofs) as integer)) as state
+  from (select line, test-1-20*line as ofs, test, result
+  from (select cast((test-1)/20 as integer) as line, test, result from testresults where result) s
+  ) s group by line) s
+on image.line=s.line order by image.line;
 
