@@ -1,5 +1,8 @@
 -- provide test results here
-with testresults as (select index as test, true as result from generate_series(1,260) s(index))
+-- test that integer casting rounds, not truncates
+with test_1 as (SELECT 1 test, 4.8::INTEGER = 5 as result),
+testresults as (select * from test_1 UNION ALL SELECT index as test, true as result from generate_series(2,260) s(index))
+
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
 (0, '+-----------------+'),
