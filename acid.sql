@@ -142,7 +142,11 @@ FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
 UNION ALL
-select index as test, true as result from generate_series(12,260) s(index) 
+-- check that aggregations are correctly extracted from a subquery
+SELECT 12 AS test, (SELECT SUM(x))=126 AS result
+FROM (VALUES (42), (84)) AS t(x)
+UNION ALL
+select index as test, true as result from generate_series(13,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
