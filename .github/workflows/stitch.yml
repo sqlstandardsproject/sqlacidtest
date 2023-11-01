@@ -1,0 +1,19 @@
+name: stitch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run stitching script
+        run: ./stitch.sh sql/test* > acid.sql
+      - name: Upload stitched result
+        uses: actions/upload-artifact@v3
+        with:
+          name: acid
+          path: acid.sql
