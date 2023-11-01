@@ -1,7 +1,7 @@
 -- provide test results here
 with testresults as (
   
-select 0 as test, result from (
+select 1 as test, result from (
 -- check that the engine handles existential queries in disjunctions
 
 -- result header
@@ -16,13 +16,13 @@ where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 ) test
 ) testcase(result)
 UNION ALL
-select 1 as test, result from (
+select 2 as test, result from (
 -- test that casting to integer rounds and does not truncate
 
 SELECT CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 as result
 ) testcase(result)
 UNION ALL
-select 2 as test, result from (
+select 3 as test, result from (
 -- check that that quantified expressions return NULL values as needed
 
 -- result header
@@ -39,13 +39,13 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) test
 ) testcase(result)
 UNION ALL
-select 3 as test, result from (
+select 4 as test, result from (
 -- a string may be empty but that doesn't make it NULL
 
 SELECT '' IS NOT NULL AS result
 ) testcase(result)
 UNION ALL
-select 4 as test, result from (
+select 5 as test, result from (
 -- check that full outer joins are decorrelated correctly
 
 -- result header
@@ -63,7 +63,7 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 ) test
 ) testcase(result)
 UNION ALL
-select 5 as test, result from (
+select 6 as test, result from (
 -- check that decimal number behave sane
 
 -- result header
@@ -78,7 +78,7 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 ) test
 ) testcase(result)
 UNION ALL
-select 6 as test, result from (
+select 7 as test, result from (
 -- check that multi set operations are supported
 
 -- result header
@@ -97,7 +97,7 @@ group by x
 ) test
 ) testcase(result)
 UNION ALL
-select 7 as test, result from (
+select 8 as test, result from (
 -- check that || is actually the string concat operator...
 
 -- result header
@@ -110,7 +110,7 @@ select 'abc' || 'def'
 ) _(s)
 ) testcase(result)
 UNION ALL
-select 8 as test, result from (
+select 9 as test, result from (
 -- check aggregate behavior
 -- result header
 SELECT
@@ -146,7 +146,7 @@ FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS
 ) test
 ) testcase(result)
 UNION ALL
-select 9 as test, result from (
+select 10 as test, result from (
 -- check for the space-padding semantics of type char(n)
 
 SELECT CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
@@ -154,7 +154,7 @@ SELECT CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
        CAST('123' AS text)    <> CAST('123 ' AS text) AS result
 ) testcase(result)
 UNION ALL
-select 10 as test, result from (
+select 11 as test, result from (
 SELECT AVG(x)>0 AS result
 FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT) AS x
@@ -163,13 +163,13 @@ FROM (
 ) AS t
 ) testcase(result)
 UNION ALL
-select 11 as test, result from (
+select 12 as test, result from (
 -- check that aggregations are correctly extracted from a subquery
 SELECT (SELECT SUM(x))=126 AS result
 FROM (VALUES (42), (84)) AS t(x)
 ) testcase(result)
 UNION ALL
-select 12 as test, result from (
+select 13 as test, result from (
 -- check that recursive queries work
 
 -- result header
@@ -198,7 +198,7 @@ select state from sudoku where next=0
 ) test
 ) testcase(result)
 UNION ALL
-select 13 as test, result from (
+select 14 as test, result from (
 -- check that precedence matches the standard precedence order
 select (
 	-- * has higher precedence than binary +
@@ -227,7 +227,7 @@ select (
 ) as result
 ) testcase(result)
 UNION ALL
-select index as test, true as result from generate_series(14,260) s(index) 
+select index as test, true as result from generate_series(15,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
