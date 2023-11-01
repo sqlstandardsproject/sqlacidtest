@@ -60,10 +60,10 @@ echo "$RENDER_TEMPLATE_HEAD"
 
 for (( i=0; i < N_TESTS; i++ )); do
   TEST_FILE="${TEST_FILES[$i]}"
-  printf 'select %d as test, result from (\n%s\n) testcase(test,result)\nUNION ALL\n' "$i" "$(< "$TEST_FILE")"
+  printf 'select %d as test, result from (\n%s\n) testcase(result)\nUNION ALL\n' "$i" "$(< "$TEST_FILE")"
 done
 
-printf "select index as test, true as result from generate_series($((1+N_TESTS)),260) s(index) "
+printf "select index as test, true as result from generate_series($((N_TESTS)),260) s(index) "
 
 echo "$RENDER_TEMPLATE_TAIL"
 
