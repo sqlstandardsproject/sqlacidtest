@@ -30,4 +30,4 @@ Tests are written in standard SQL and compiled into a single query. If the tests
 We welcome contributions with additional test cases. To add a test case, add a `.sql` file in the `sql` directory and run the `stitch.sh` script.
 
 ## Credits
-The project was started as part of the [Dagstuhl Seminar 23441](https://www.dagstuhl.de/en/seminars/seminar-calendar/seminar-details/23441): Ensuring the Reliability and Robustness of Database Management Systems
+The project was started as part of the [Dagstuhl Seminar 23441(https://www.dagstuhl.de/en/seminars/seminar-calendar/seminar-details/23441): Ensuring the Reliability and Robustness of Database Management Systems]
