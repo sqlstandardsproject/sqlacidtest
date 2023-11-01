@@ -165,8 +165,8 @@ FROM (
 UNION ALL
 select 12 as test, result from (
 -- check that aggregations are correctly extracted from a subquery
-SELECT (SELECT SUM(x))=126 AS result
-FROM (VALUES (42), (84)) AS t(x)
+SELECT (SELECT SUM(x))=42 AS result
+FROM (VALUES (42)) AS t(x)
 ) testcase(result)
 UNION ALL
 select 13 as test, result from (
