@@ -111,8 +111,6 @@ SELECT 9 AS test,
 	 AS result
 FROM (
 
-
--- all aggregates shuold ignore NULL
 SELECT 
 	sum(x) as su, -- this should not overflow nor throw an error
 	min(x) as mi, -- those two should just work
@@ -137,7 +135,14 @@ SELECT 10 AS test,
          AND
        CAST('123' AS text)    <> CAST('123 ' AS text) AS result
 UNION ALL
-select index as test, true as result from generate_series(11,260) s(index) 
+SELECT 11 AS test, AVG(x)>0 AS result
+FROM (
+	SELECT CAST(9223372036854775807 AS BIGINT) AS x
+	UNION ALL
+	SELECT CAST(9223372036854775807 AS BIGINT)
+) AS t
+UNION ALL
+select index as test, true as result from generate_series(12,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
