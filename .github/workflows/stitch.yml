@@ -2,8 +2,10 @@ name: stitch
 on:
   push:
     branches: [ "main" ]
+    paths: [ "sql/*.sql" ]
   pull_request:
     branches: [ "main" ]
+    paths: [ "sql/*.sql" ]
   workflow_dispatch:
 jobs:
   build:
@@ -17,3 +19,14 @@ jobs:
         with:
           name: acid
           path: acid.sql
+  check:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: acid
+          path: /acid.sql
+      - name: Run stitching script
+        run: git diff --exit-code /acid.sql acid.sql
