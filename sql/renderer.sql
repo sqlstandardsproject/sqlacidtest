@@ -1,5 +1,9 @@
 -- provide test results here
-with testresults as (select index as test, true as result from generate_series(1,260) s(index))
+with testresults as (
+  -- START TEST CASES
+  select index as test, true as result from generate_series(1,260) s(index)
+  -- END TEST CASES
+)
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
 (0, '+-----------------+'),
