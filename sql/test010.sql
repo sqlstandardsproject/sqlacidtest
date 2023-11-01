@@ -3,4 +3,4 @@
 SELECT 10 AS test,
        CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
-       CAST('123' AS text)    <> CAST('123 ' AS text) AS result;
+       CAST('123' AS text)    <> CAST('123 ' AS text) AS result
