@@ -146,7 +146,14 @@ UNION ALL
 SELECT 12 AS test, (SELECT SUM(x))=126 AS result
 FROM (VALUES (42), (84)) AS t(x)
 UNION ALL
-select index as test, true as result from generate_series(13,260) s(index) 
+-- check that conjunctions correctly handle NULL values
+SELECT 13 AS test,
+    NULL OR x>0
+    AND
+    NOT (NULL AND x<0) AS result
+FROM (VALUES (42)) AS t(x)
+UNION ALL
+select index as test, true as result from generate_series(14,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
