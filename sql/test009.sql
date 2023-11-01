@@ -15,8 +15,6 @@ SELECT 9 AS test,
 	 AS result
 FROM (
 
-
--- all aggregates shuold ignore NULL
 SELECT 
 	sum(x) as su, -- this should not overflow nor throw an error
 	min(x) as mi, -- those two should just work
