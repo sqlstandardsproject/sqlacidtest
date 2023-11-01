@@ -26,7 +26,7 @@ SELECT
 	count(*) as cs, -- NULL should be included here
 	min(CAST (x as VARCHAR)) as mis, -- min/max should work on strings
 	max(CAST (x as VARCHAR)) as mas,
-	sum(distinct x) as sd,
+	sum(distinct x) as sd, -- distinct aggregates should work
 	count(distinct x) as cd,
 	avg(distinct x) as ad
 
