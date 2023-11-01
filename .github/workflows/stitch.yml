@@ -27,6 +27,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: acid
-          path: /acid.sql
+          path: _acid.sql
       - name: Run stitching script
-        run: git diff --exit-code /acid.sql acid.sql
+        run: git diff --exit-code _acid.sql acid.sql
