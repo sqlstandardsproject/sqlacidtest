@@ -1,7 +1,7 @@
 -- check that full outer joins are decorrelated correctly
 
 -- result header
-select 1 as test, count(x)=8 as result
+select 5 as test, count(x)=8 as result
 from (
 (values(1,NULL,2),(1,NULL,3),(2,1,NULL),(2,NULL,2),(2,NULL,3),(3,1,NULL),(3,2,2),(3,NULL,3)) expected(a,b,c)
 left outer join (
