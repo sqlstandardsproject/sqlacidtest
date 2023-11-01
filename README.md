@@ -7,7 +7,7 @@ The SQL Acid Test defines a common sane understanding of details in SQL SELECT q
 Tests are written in standard SQL and compiled into a single query. If the tests pass, a smiley face as shown below is displayed. If tests fail, the image is either distorted or not shown at all due to errors in query evaluation. To test your specific SQL system, copy the query in the file `acid.sql` below and run it. 
 
 ```
-+-----------------+
+ +-----------------+
  |......#####......|
  |....##.....##....|
  |...#.........#...|
@@ -23,10 +23,11 @@ Tests are written in standard SQL and compiled into a single query. If the tests
  ```
 
 ## Systems known to be compliant
-* PostgreSQL
-* Umbra
-
+* [PostgreSQL](https://www.postgresql.org)
+* [Umbra](https://umbra-db.com)
 
 ## Contribute
 We welcome contributions with additional test cases. To add a test case, add a `.sql` file in the `sql` directory and run the `stitch.sh` script.
 
+## Credits
+The project was started as part of the [Dagstuhl Seminar 23441](https://www.dagstuhl.de/en/seminars/seminar-calendar/seminar-details/23441): Ensuring the Reliability and Robustness of Database Management Systems
