@@ -7,8 +7,8 @@ SELECT 9 AS test,
 	av BETWEEN 25000.4 AND 25000.6 AND
 	ct = 2 AND
 	cs = 3 AND
-	mis = 'asdf' AND
-	mas = 'asdf' AS result
+	mis = '20001' AND
+	mas = '30000' AS result
 FROM (
 
 
@@ -20,8 +20,8 @@ SELECT
 	avg(x) as av, -- should not be an integer average
 	count(x) as ct, -- NULL should be excluded here
 	count(*) as cs, -- NULL should be included here
-	min('asdf') as mis, -- min/max should work on strings
-	max('asdf') as mas
+	min(CAST (x as VARCHAR)) as mis, -- min/max should work on strings
+	max(CAST (x as VARCHAR)) as mas
 
 FROM (VALUES(CAST(30000 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
