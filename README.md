@@ -1,4 +1,8 @@
-# <img src="logo.svg" style="width: 1.5em;vertical-align:text-bottom;"/> SQL Acid Test
+<div align="left">
+ <img src="logo.svg" height="140"/>
+</div>
+
+# SQL Acid Test
 
 Despite the existence of the SQL standard, there are still many differences between different SQL engines. Some differences are due to ambiguities or lack of detail in the standard, others are due to historical or political reasons. Those differences make it very hard to write portable SQL queries and generally hinder progress.
 
