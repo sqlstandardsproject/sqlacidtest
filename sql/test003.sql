@@ -1,7 +1,7 @@
 -- check that that quantified expressions return NULL values as needed
 
 -- result header
-select case when (r1=5) and (r2=40) then 'T' else 'F' end as result
+select (r1=5) and (r2=40) as result
 from (
 
 -- the query itself
