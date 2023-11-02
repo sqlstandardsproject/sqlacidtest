@@ -242,7 +242,7 @@ SELECT
 -- sql/test017.sql
 
 SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
-FROM (SELECT 42 AS hello) AS t
+FROM (VALUES (42)) AS t(hello)
 ) testcase(result) UNION ALL select 18 as test, result from (
 -- sql/test018.sql
 select case when (1=1      
@@ -273,7 +273,7 @@ select case when (1=1
   AND TRUE BETWEEN FALSE AND TRUE
   AND FALSE BETWEEN FALSE AND TRUE
     
-) then 'T' else 'F' end as result;
+) then 'T' else 'F' end as result from (values (1)) as t;
 ) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(19,260) s(index) 
 )
 -- render the result

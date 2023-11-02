@@ -26,4 +26,4 @@ select case when (1=1
   AND TRUE BETWEEN FALSE AND TRUE
   AND FALSE BETWEEN FALSE AND TRUE
     
-) then 'T' else 'F' end as result;
+) then 'T' else 'F' end as result from (values (1)) as t;
