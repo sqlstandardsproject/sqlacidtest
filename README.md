@@ -26,6 +26,17 @@ Tests are written in standard SQL and compiled into a single query. If the tests
  +-----------------+
  ```
 
+## Testing
+
+You can use the `test_binary.py` script to easily run all tests on a local binary. Example usage:
+
+```bash
+python3 test_binary.py --program sqlite3
+python3 test_binary.py --program mysql --extra "-u root"
+python3 test_binary.py --program psql --extra "-d postgres"
+python3 test_binary.py --program duckdb
+```
+
 ## Systems known to be compliant
 
 * [Compatibility Matrix](https://docs.google.com/spreadsheets/d/1uDqQeXAWH8N9U6YeY5GpRgDsZugFUrMuz5EpXUutsVs/edit?usp=sharing)
