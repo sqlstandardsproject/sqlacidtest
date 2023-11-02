@@ -2,6 +2,62 @@
 with testresults as (
   
 select 1 as test, result from (
+-- tests/compliance/022-like.sql
+
+
+SELECT CASE WHEN (1=1
+    
+    AND 'HELLO' LIKE 'HELLO'
+    AND 'HELLO' LIKE 'HEL%O'  
+    AND 'HELLO' LIKE 'HE%%O'  
+    AND 'HELLO' LIKE 'H%'  
+    AND 'HELLO' LIKE 'H_LLO' 
+    AND 'HELLO' LIKE '_ELLO'   
+    AND 'HELLO' LIKE '_____'  
+    AND 'HELLO' LIKE '_____%'  
+    AND 'HELLO' LIKE '%_____%'  
+    AND 'HELLO' LIKE '%%%%%%%'  
+    AND 'HELLO' LIKE '%%%%%%%'              
+    AND '%' LIKE '%'
+    AND '_' LIKE '_'
+             
+    
+    AND 'HELLO' NOT LIKE 'HeLLO'
+    AND 'HELLO' NOT LIKE 'HeL%O'  
+    AND 'HELLO' NOT LIKE 'He%%O'  
+    AND 'HELLO' NOT LIKE 'h%'  
+    AND 'HELLO' NOT LIKE 'h_LLO' 
+    AND 'HELLO' NOT LIKE '_eLLO'   
+    AND 'HELLO' NOT LIKE '______'  
+    AND 'HELLO' NOT LIKE '______%'  
+    AND 'HELLO' NOT LIKE '%______%'  
+    AND 'HELLO' NOT LIKE 'h%%%%%%%' 
+                  
+    
+    AND '100%' LIKE '100b%' ESCAPE 'b'
+    AND '1000' NOT LIKE '100b%' ESCAPE 'b'
+    AND '100_' LIKE '100b_' ESCAPE 'b'
+    AND '1000' NOT LIKE '100b_' ESCAPE 'b'
+    AND '____' LIKE 'b_b_b_b_' ESCAPE 'b'
+    AND '_
+    AND '_%%_' LIKE 'b_b%b%b_' ESCAPE 'b'
+    AND '_
+    AND 'b' LIKE 'bb' ESCAPE 'b'
+    AND 'bbb' LIKE 'bbbbbb' ESCAPE 'b'
+    AND 'bbbH' LIKE 'bbbbbbH' ESCAPE 'b'
+                  
+    
+    AND ('HELLO' LIKE NULL) IS NULL
+    AND (NULL LIKE NULL) IS NULL
+    AND (NULL LIKE 'HELLO') IS NULL
+    AND ('HELLO' LIKE 'HELLO' ESCAPE NULL) IS NULL
+    AND (NULL LIKE NULL ESCAPE NULL) IS NULL
+    AND (NULL LIKE 'HELLO' ESCAPE NULL) IS NULL
+    AND (NULL LIKE NULL ESCAPE NULL) IS NULL
+                  
+) THEN 'T' ELSE 'F' END
+FROM (VALUES (1)) t(x)
+) testcase(result) UNION ALL select 2 as test, result from (
 -- tests/compliance/test008.sql
 
 
@@ -15,7 +71,7 @@ from (
 values ('abc' || 'def')
 
 ) t(s)
-) testcase(result) UNION ALL select 2 as test, result from (
+) testcase(result) UNION ALL select 3 as test, result from (
 -- tests/compliance/test016.sql
 
 
@@ -34,7 +90,7 @@ SELECT
     AND CAST(NULL AS DOUBLE PRECISION) IS NULL
     AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
   THEN 'T' ELSE 'F' END AS result
-) testcase(result) UNION ALL select 3 as test, result from (
+) testcase(result) UNION ALL select 4 as test, result from (
 -- tests/compliance/test019.sql
 
 
@@ -76,7 +132,7 @@ SELECT CASE WHEN (
   CAST('-1.2E-3' AS NUMERIC(10,3)) = CAST(-1.2E-3 AS NUMERIC(10,3))
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) something(x)
-) testcase(result) UNION ALL select 4 as test, result from (
+) testcase(result) UNION ALL select 5 as test, result from (
 -- tests/compliance/test020.sql
 
 
@@ -92,7 +148,7 @@ FROM (VALUES (1)) something(x)
 
 SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
-) testcase(result) UNION ALL select 5 as test, result from (
+) testcase(result) UNION ALL select 6 as test, result from (
 -- tests/compliance/test021.sql
 
 
@@ -108,28 +164,6 @@ FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
 
 SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES ('''')) AS t(x)
-) testcase(result) UNION ALL select 6 as test, result from (
--- tests/compliance/test023.sql
-
-
-
-
-
-
-SELECT CASE WHEN
-              NULL IS UNKNOWN
-          AND (NULL IS UNKNOWN) IS NOT UNKNOWN
-          AND (NULL = 42) IS UNKNOWN
-          AND ((NULL AND FALSE) IS NOT DISTINCT FROM FALSE)
-          AND ((NULL OR  TRUE)  IS NOT DISTINCT FROM TRUE)
-          AND (NULL IS NULL)
-          AND ((NULL IS TRUE) IS NOT UNKNOWN)
-          AND ((NULL IS TRUE) IS NOT DISTINCT FROM FALSE)
-          AND ((NULL IS FALSE) IS NOT UNKNOWN)
-          AND ((NULL IS FALSE) IS NOT DISTINCT FROM FALSE)
-       THEN 'T'
-       ELSE 'F'
-       END
 ) testcase(result) UNION ALL select 7 as test, result from (
 -- tests/convention/test001.sql
 
