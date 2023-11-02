@@ -7,4 +7,4 @@ from (
 -- the query itself
 select 'abc' || 'def'
 
-) _(s)
+) somealias(s)

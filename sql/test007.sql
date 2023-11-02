@@ -3,7 +3,12 @@
 -- result header
 select case when (count(*) = 3) and (count(x) = 3) then 'T' else 'F' end as result
 from (
-(values(2,2),(3,1),(4,1)) expected(a,b)
+(
+	SELECT 2 AS a, 2 AS b
+	UNION ALL
+	SELECT 3,1
+	UNION ALL
+	SELECT 4,1) AS expected
 full outer join (
 
 
