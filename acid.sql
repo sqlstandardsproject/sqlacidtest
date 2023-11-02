@@ -490,7 +490,14 @@ with recursive
 select state from sudoku where next=0
 
 ) test
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(26,260) s(index) 
+) testcase(result) UNION ALL select 26 as test, result from (
+-- tests/convention/test026.sql
+-- Should be standard compliant, but I cannot find the section in the
+-- standard that says so explicitly.
+select case when (true
+  and (select a as b from (values (1)) t(a) order by b) = 1
+) then 'T' else 'F' end from (values (1)) AS t
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(27,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
