@@ -229,7 +229,7 @@ select (
 UNION ALL
 select 15 as test, result from (
 -- check that conjunctions correctly handle NULL values
-SELECT 14 AS test,
+SELECT
     NULL OR x>0
     AND
     NOT (NULL AND x<0) AS result
