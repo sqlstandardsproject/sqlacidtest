@@ -1,3 +1,4 @@
+-- Test that an alias from the select clause can be used in the order by clause
 -- Should be standard compliant, but I cannot find the section in the
 -- standard that says so explicitly.
 select case when (true

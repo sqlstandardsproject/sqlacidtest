@@ -492,6 +492,7 @@ select state from sudoku where next=0
 ) test
 ) testcase(result) UNION ALL select 26 as test, result from (
 -- tests/convention/test026.sql
+-- Test that an alias from the select clause can be used in the order by clause
 -- Should be standard compliant, but I cannot find the section in the
 -- standard that says so explicitly.
 select case when (true
