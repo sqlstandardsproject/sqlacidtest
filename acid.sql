@@ -83,12 +83,35 @@ select 5 as test, result from (
 -- result header
 select case when count(x)=8 then 'T' else 'F' end as result
 from (
-(values(1,NULL,2),(1,NULL,3),(2,1,NULL),(2,NULL,2),(2,NULL,3),(3,1,NULL),(3,2,2),(3,NULL,3)) expected(a,b,c)
+(
+	SELECT 1 AS a, CAST(NULL AS INTEGER) AS b, 2 AS c
+	UNION ALL
+	SELECT 1,NULL,3
+	UNION ALL
+	SELECT 2,1,NULL
+	UNION ALL
+	SELECT 2,NULL,2
+	UNION ALL
+	SELECT 2,NULL,3
+	UNION ALL
+	SELECT 3,1,NULL
+	UNION ALL
+	SELECT 3,2,2
+	UNION ALL
+	SELECT 3,NULL,3) AS expected
 left outer join (
 
 
 -- the query itself
-select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (values(1),(2)) a(y) where y<x) a full outer join (values(2),(3)) b(z) on y=z) t
+select * from (
+	SELECT 1 AS x
+	UNION ALL
+	SELECT 2
+	UNION ALL
+	SELECT 3) AS s,
+    lateral (
+    	select * from (
+    		select * from (SELECT 1 AS y UNION ALL SELECT 2) AS a where y<x) a full outer join (SELECT 2 AS z UNION ALL SELECT 3) b(z) on y=z) t
 
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
@@ -132,7 +155,43 @@ full outer join (
 
 -- the query itself
 select x, count(*) as c
-from ((select * from (values(1),(2),(2),(3),(3),(3),(4),(4),(4),(4)) s(x) except all select * from (values(1),(3),(3)) t(x)) intersect all select * from (values(2),(2),(2),(4),(3),(3)) u(x)) s
+from ((select * from (
+	SELECT 1 AS x
+	UNION ALL
+	SELECT 2
+	UNION ALL
+	SELECT 2
+	UNION ALL
+	SELECT 3
+	UNION ALL
+	SELECT 3
+	UNION ALL
+	SELECT 3
+	UNION ALL
+	SELECT 4
+	UNION ALL
+	SELECT 4
+	UNION ALL
+	SELECT 4
+	UNION ALL
+	SELECT 4) AS s
+    except all select * from (
+    	SELECT 1 AS x
+    	UNION ALL
+    	SELECT 3
+    	UNION ALL
+    	SELECT 3) AS t) intersect all select * from (
+		SELECT 2 AS x
+		UNION ALL
+		SELECT 2
+		UNION ALL
+		SELECT 2
+		UNION ALL
+		SELECT 4
+		UNION ALL
+		SELECT 3
+		UNION ALL
+		SELECT 3) AS u) s
 group by x
 
 ) s on (x=a and c=b)
