@@ -10,8 +10,20 @@ from (
 
 -- the query itself
 select sum(x) as queryresult
-from (values(1),(2),(4),(8),(NULL)) s(x)
-where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
+from (
+	SELECT 1 AS x
+	UNION ALL
+	SELECT 2
+	UNION ALL
+	SELECT 4
+	UNION ALL
+	SELECT 8
+	UNION ALL
+	SELECT NULL) AS s
+where exists(select * from (
+	SELECT 2 AS y
+	UNION ALL
+	SELECT 8) AS t where x=y) or (x<3)
 
 ) test
 ) testcase(result)
@@ -32,8 +44,28 @@ from (
 -- the query itself
 select sum(case when m then i else 0 end) as r1, sum(case when m is null then i else 0 end) r2
 from (
-select i, x=some(select a from (values(1,1),(2,2),(3,3),(4,4),(NULL,5)) t(a,b) where b<y) as m
-from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
+select i, x=some(select a from (
+	SELECT 1 AS a, 1 AS b
+	UNION ALL
+	SELECT 2, 2
+	UNION ALL
+	SELECT 3, 3
+	UNION ALL
+	SELECT 4, 4
+	UNION ALL
+	SELECT NULL, 5) AS t where b<y) as m
+from (
+	SELECT 1 AS x, 4 AS y, 1 AS i
+	UNION ALL
+	SELECT 2,2,2
+	UNION ALL
+	SELECT 4,6,4
+	UNION ALL
+	SELECT 8,8,8
+	UNION ALL
+	SELECT NULL,0,16
+	UNION ALL
+	SELECT NULL,8,32) AS s
 ) s
 
 ) test
@@ -72,7 +104,12 @@ from (
 
 
 -- the query itself
-select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
+select sum(x)/10 as s from (
+	SELECT 0.2 AS x
+	UNION ALL
+	SELECT 0.2
+	UNION ALL
+	SELECT -0.3) AS s
 
 
 ) test
@@ -84,7 +121,12 @@ select 7 as test, result from (
 -- result header
 select case when (count(*) = 3) and (count(x) = 3) then 'T' else 'F' end as result
 from (
-(values(2,2),(3,1),(4,1)) expected(a,b)
+(
+	SELECT 2 AS a, 2 AS b
+	UNION ALL
+	SELECT 3,1
+	UNION ALL
+	SELECT 4,1) AS expected
 full outer join (
 
 
@@ -107,7 +149,7 @@ from (
 -- the query itself
 select 'abc' || 'def'
 
-) _(s)
+) somealias(s)
 ) testcase(result)
 UNION ALL
 select 9 as test, result from (
@@ -141,7 +183,14 @@ SELECT
 	count(distinct x) as cd,
 	avg(distinct x) as ad
 
-FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
+FROM (
+	SELECT CAST(30001 AS SMALLINT) AS x
+	UNION ALL
+	SELECT CAST(20001 AS SMALLINT)
+	UNION ALL
+	SELECT CAST(20001 AS SMALLINT)
+	UNION ALL
+	SELECT NULL) AS s
 
 ) test
 ) testcase(result)
@@ -166,7 +215,7 @@ UNION ALL
 select 12 as test, result from (
 -- check that aggregations are correctly extracted from a subquery
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
-FROM (VALUES (42)) AS t(x)
+FROM (SELECT 42 AS x) AS t
 ) testcase(result)
 UNION ALL
 select 13 as test, result from (
@@ -233,7 +282,7 @@ SELECT case when
     NULL OR x>0
     AND
     NOT (NULL AND x<0) then 'T' else 'F' end AS result
-FROM (VALUES (42)) AS t(x)
+FROM (SELECT 42 AS x) AS t
 ) testcase(result)
 UNION ALL
 select index as test, 'T' as result from generate_series(16,260) s(index) 
