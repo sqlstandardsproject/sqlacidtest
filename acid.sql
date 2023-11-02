@@ -320,7 +320,39 @@ select case when (1=1
   AND FALSE BETWEEN FALSE AND TRUE
     
 ) then 'T' else 'F' end as result from (values (1)) as t
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(20,260) s(index) 
+) testcase(result) UNION ALL select 20 as test, result from (
+-- tests/convention/test020.sql
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
+FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
+) testcase(result) UNION ALL select 21 as test, result from (
+-- tests/convention/test021.sql
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
+FROM (VALUES ('''')) AS t(x)
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(22,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
