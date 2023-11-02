@@ -1,7 +1,7 @@
 -- check that decimal number behave sane
 
 -- result header
-select 6 as test, s*10000000000000000 = 100000000000000 as result
+select s*10000000000000000 = 100000000000000 as result
 from (
 
 

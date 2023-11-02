@@ -1,7 +1,7 @@
 -- check that the engine handles existential queries in disjunctions
 
 -- result header
-select 1 as test, queryresult = 11 as result
+select queryresult = 11 as result
 from (
 
 -- the query itself

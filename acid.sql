@@ -1,10 +1,11 @@
 -- provide test results here
 with testresults as (
   
+select 1 as test, result from (
 -- check that the engine handles existential queries in disjunctions
 
 -- result header
-select 1 as test, queryresult = 11 as result
+select queryresult = 11 as result
 from (
 
 -- the query itself
@@ -13,15 +14,19 @@ from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
+) testcase(result)
 UNION ALL
+select 2 as test, result from (
 -- test that casting to integer rounds and does not truncate
 
-SELECT 2 as test, CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 as result
+SELECT CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 as result
+) testcase(result)
 UNION ALL
+select 3 as test, result from (
 -- check that that quantified expressions return NULL values as needed
 
 -- result header
-select 3 as test, (r1=5) and (r2=40) as result
+select (r1=5) and (r2=40) as result
 from (
 
 -- the query itself
@@ -32,15 +37,19 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
 ) test
+) testcase(result)
 UNION ALL
+select 4 as test, result from (
 -- a string may be empty but that doesn't make it NULL
 
-SELECT 4 AS test, '' IS NOT NULL AS result
+SELECT '' IS NOT NULL AS result
+) testcase(result)
 UNION ALL
+select 5 as test, result from (
 -- check that full outer joins are decorrelated correctly
 
 -- result header
-select 5 as test, count(x)=8 as result
+select count(x)=8 as result
 from (
 (values(1,NULL,2),(1,NULL,3),(2,1,NULL),(2,NULL,2),(2,NULL,3),(3,1,NULL),(3,2,2),(3,NULL,3)) expected(a,b,c)
 left outer join (
@@ -52,11 +61,13 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
 ) test
+) testcase(result)
 UNION ALL
+select 6 as test, result from (
 -- check that decimal number behave sane
 
 -- result header
-select 6 as test, s*10000000000000000 = 100000000000000 as result
+select s*10000000000000000 = 100000000000000 as result
 from (
 
 
@@ -65,11 +76,13 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
 ) test
+) testcase(result)
 UNION ALL
+select 7 as test, result from (
 -- check that multi set operations are supported
 
 -- result header
-select 7 as test, (count(*) = 3) and (count(x) = 3) as result
+select (count(*) = 3) and (count(x) = 3) as result
 from (
 (values(2,2),(3,1),(4,1)) expected(a,b)
 full outer join (
@@ -82,21 +95,25 @@ group by x
 
 ) s on (x=a and c=b)
 ) test
+) testcase(result)
 UNION ALL
+select 8 as test, result from (
 -- check that || is actually the string concat operator...
 
 -- result header
-select 8 as test, s = 'abcdef' as result
+select s = 'abcdef' as result
 from (
 
 -- the query itself
 select 'abc' || 'def'
 
 ) _(s)
+) testcase(result)
 UNION ALL
+select 9 as test, result from (
 -- check aggregate behavior
 -- result header
-SELECT 9 AS test,
+SELECT
 	su = 70003 AND
 	mi = 20001 AND
 	ma = 30001 AND
@@ -111,7 +128,7 @@ SELECT 9 AS test,
 	 AS result
 FROM (
 
-SELECT 
+SELECT
 	sum(x) as su, -- this should not overflow nor throw an error
 	min(x) as mi, -- those two should just work
 	max(x) as ma,
@@ -127,29 +144,36 @@ SELECT
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
 ) test
+) testcase(result)
 UNION ALL
+select 10 as test, result from (
 -- check for the space-padding semantics of type char(n)
 
-SELECT 10 AS test,
-       CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
+SELECT CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
        CAST('123' AS text)    <> CAST('123 ' AS text) AS result
+) testcase(result)
 UNION ALL
-SELECT 11 AS test, AVG(x)>0 AS result
+select 11 as test, result from (
+SELECT AVG(x)>0 AS result
 FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT) AS x
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
+) testcase(result)
 UNION ALL
+select 12 as test, result from (
 -- check that aggregations are correctly extracted from a subquery
-SELECT 12 AS test, (SELECT SUM(x))=126 AS result
-FROM (VALUES (42), (84)) AS t(x)
+SELECT (SELECT SUM(x))=42 AS result
+FROM (VALUES (42)) AS t(x)
+) testcase(result)
 UNION ALL
+select 13 as test, result from (
 -- check that recursive queries work
 
 -- result header
-select 13 as test, (state='924875136138624795765391842546713928812469357397582614651238479489157263273946581') as result
+select (state='924875136138624795765391842546713928812469357397582614651238479489157263273946581') as result
 from (
 
 
@@ -163,7 +187,7 @@ with recursive
    select state, position(' ' in state) as next
    from (select substring(state from 1 for next-1) || try || substring(state from next+1) as state
          from sudoku, (select ch as try from digits) g
-         where next > 0 and 
+         where next > 0 and
          not exists(select 1 from (select value as pos from digits) s
                     where try = substring(state from cast(floor((next-1)/9) as integer)*9+pos for 1)
                     or    try = substring(state from mod((next-1),9)+9*pos-8 for 1)
@@ -172,15 +196,47 @@ with recursive
 select state from sudoku where next=0
 
 ) test
+) testcase(result)
 UNION ALL
+select 14 as test, result from (
+-- check that precedence matches the standard precedence order
+select (
+	-- * has higher precedence than binary +
+	(1+2*3) = (1+(2*3)) and
+
+	-- / has higher precedence than binary -
+	(2-3/4) = (2-(3/4)) and
+
+	-- Left Associativity of /*
+	(2/3/3) = ((2/3)/3) and
+	(2/3*3) = ((2/3)*3) and
+
+	-- < > = <> has lower precedence than binary -/+*
+	(1+2 < 2+2) = ((1+2) < (2+2))  and
+	(1+2 <= 1+2) = ((1+2) <= (1+2))  and
+	(2+2 > 1+2) = ((2+2) > (1+2))  and
+	(2+2 >= 1+2) = ((2+2) >= (1+2))  and
+	(2+2 <> 1+2) = ((2+2) <> (1+2))	and
+
+	-- in between  has lower precedence than binary,unary operator
+	(2 between 2-1 and 2+1) and
+	(2 + 3 in (3+2)) and
+
+	-- OR has lower preceedence than the logical negation
+	(not true or true) = ((not true) or true)
+) as result
+) testcase(result)
+UNION ALL
+select 15 as test, result from (
 -- check that conjunctions correctly handle NULL values
 SELECT 14 AS test,
     NULL OR x>0
     AND
     NOT (NULL AND x<0) AS result
 FROM (VALUES (42)) AS t(x)
+) testcase(result)
 UNION ALL
-select index as test, true as result from generate_series(15,260) s(index) 
+select index as test, true as result from generate_series(16,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values

@@ -1,6 +1,6 @@
 -- check aggregate behavior
 -- result header
-SELECT 9 AS test,
+SELECT
 	su = 70003 AND
 	mi = 20001 AND
 	ma = 30001 AND
@@ -15,7 +15,7 @@ SELECT 9 AS test,
 	 AS result
 FROM (
 
-SELECT 
+SELECT
 	sum(x) as su, -- this should not overflow nor throw an error
 	min(x) as mi, -- those two should just work
 	max(x) as ma,
