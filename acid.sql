@@ -221,7 +221,24 @@ SELECT case when
     AND
     NOT (NULL AND x<0) then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(16,260) s(index) 
+) testcase(result) UNION ALL select 16 as test, result from (
+-- sql/test016.sql
+
+SELECT
+  CASE WHEN
+        CAST(NULL AS CHARACTER) IS NULL
+    AND CAST(NULL AS NUMERIC) IS NULL
+    AND CAST(NULL AS DECIMAL) IS NULL
+    AND CAST(NULL AS SMALLINT) IS NULL
+    AND CAST(NULL AS INTEGER) IS NULL
+    AND CAST(NULL AS INT) IS NULL
+    AND CAST(NULL AS BIGINT) IS NULL
+    AND CAST(NULL AS FLOAT) IS NULL
+    AND CAST(NULL AS REAL) IS NULL
+    AND CAST(NULL AS DOUBLE PRECISION) IS NULL
+    AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
+  THEN 'T' ELSE 'F' END AS result
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(17,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
