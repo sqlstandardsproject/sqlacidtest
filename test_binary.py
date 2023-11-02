@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import os
+import re
 
 # Example usage:
 # python3 test_binary.py --program sqlite3
@@ -33,6 +34,13 @@ parser.add_argument(
     help='Specifies which test to run (default: all)',
     default=''
 )
+parser.add_argument(
+    '--verbose',
+    dest='verbose',
+    action='store_true',
+    help='Verbose (print failures)',
+    default=False
+)
 args = parser.parse_args()
 
 
@@ -41,11 +49,16 @@ if len(args.extra) > 0:
     command += args.extra.strip().split(' ')
 
 def run_test(file_name):
-    input_data = open(file_name).read().encode('utf8')
-    res = subprocess.run(command, input=input_data, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    input_data = open(file_name).read()
+    input_data = re.sub('--[^\n]+', '', input_data) + ';'
+    res = subprocess.run(command, input=input_data.encode('utf8'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = res.stdout.decode('utf8').strip()
     stderr = res.stderr.decode('utf8').strip()
     if res.returncode != 0:
+        if args.verbose:
+            print(file_name)
+            print(stdout)
+            print(stderr)
         result = 'Error'
     elif 'T' in stdout:
         result = 'Success'
