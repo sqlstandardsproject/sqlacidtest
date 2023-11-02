@@ -1,0 +1,30 @@
+-- check string-to-number casting
+SELECT CASE WHEN (
+  CAST(' 1  ' AS NUMERIC) =  1   AND
+  CAST(' 1. ' AS NUMERIC) =  1.  AND
+  CAST(' 1.2' AS NUMERIC) =  1.2 AND
+  CAST('  .2' AS NUMERIC) =   .2 AND
+
+  CAST('+1  ' AS NUMERIC) = +1   AND
+  CAST('+1. ' AS NUMERIC) = +1.  AND
+  CAST('+1.2' AS NUMERIC) = +1.2 AND
+  CAST('+.2'  AS NUMERIC) =  +.2 AND
+
+  CAST('-1  ' AS NUMERIC) = -1   AND
+  CAST('-1. ' AS NUMERIC) = -1.  AND
+  CAST('-1.2' AS NUMERIC) = -1.2 AND
+  CAST('-.2'  AS NUMERIC) =  -.2 AND
+
+  CAST(' 1.2E3' AS NUMERIC) =  1.2E3 AND
+  CAST('+1.2E3' AS NUMERIC) = +1.2E3 AND
+  CAST('-1.2E3' AS NUMERIC) = -1.2E3 AND
+
+  CAST(' 1.2E+3' AS NUMERIC) =  1.2E+3 AND
+  CAST('+1.2E+3' AS NUMERIC) = +1.2E+3 AND
+  CAST('-1.2E+3' AS NUMERIC) = -1.2E+3 AND
+
+  CAST(' 1.2E-3' AS NUMERIC) =  1.2E-3 AND
+  CAST('+1.2E-3' AS NUMERIC) = +1.2E-3 AND
+  CAST('-1.2E-3' AS NUMERIC) = -1.2E-3
+) THEN 'T' ELSE 'F' END
+FROM (VALUES (1)) something
