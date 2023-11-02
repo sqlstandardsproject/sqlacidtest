@@ -2,10 +2,10 @@ name: stitch
 on:
   push:
     branches: [ "main" ]
-    paths: [ "sql/*.sql" ]
+    paths: [ "sql/*.sql", "acid.sql" ]
   pull_request:
     branches: [ "main" ]
-    paths: [ "sql/*.sql" ]
+    paths: [ "sql/*.sql", "acid.sql" ]
   workflow_dispatch:
 jobs:
   build:

@@ -49,7 +49,7 @@ if [[ $N_TESTS -ge 260 ]]; then
 fi
 
 function uglify() {
-  sed -E 's/--.*//' "${1:-/dev/stdin}" | tr '\n' ' '
+  sed -E "s/\\n\\n/\\n/;s/--.*//" "${1:-/dev/stdin}" | tr '\n' ' '
 }
 
 RENDER_TEMPLATE="$(< $RENDER_TEMPLATE_FILE)"
@@ -60,11 +60,9 @@ echo "$RENDER_TEMPLATE_HEAD"
 
 for (( i=0; i < N_TESTS; i++ )); do
   TEST_FILE="${TEST_FILES[$i]}"
-  printf 'select %d as test, result from (\n%s\n) testcase(result)\nUNION ALL\n' "$((1+i))" "$(< "$TEST_FILE")"
+  printf 'select %d as test, result from (%s) testcase(result) UNION ALL ' "$((1+i))" "$(uglify "$TEST_FILE")"
 done
 
 printf "select index as test, 'T' as result from generate_series($((N_TESTS+1)),260) s(index) "
 
 echo "$RENDER_TEMPLATE_TAIL"
-
-echo
