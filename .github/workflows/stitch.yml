@@ -2,10 +2,10 @@ name: stitch
 on:
   push:
     branches: [ "main" ]
-    paths: [ "sql/*.sql", "acid.sql" ]
+    paths: [ "*.sql" ]
   pull_request:
     branches: [ "main" ]
-    paths: [ "sql/*.sql", "acid.sql" ]
+    paths: [ "*.sql" ]
   workflow_dispatch:
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run stitching script
-        run: ./stitch.sh sql/test* > acid.sql
+        run: ./stitch.sh tests/**/*.sql > acid.sql
       - name: Check it does not deviate
         run: git diff --exit-code
       - name: Upload stitched result

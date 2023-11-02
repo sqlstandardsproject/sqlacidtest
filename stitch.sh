@@ -13,7 +13,9 @@ Arguments:
               [TODO]
 
 Options:
-  \033[1m-h, --help
+  -r, --render-template <FILE>
+
+  -h, --help
           Print this and exit.
 END`
 
@@ -24,12 +26,16 @@ ABORT='/!\ %s'
 abort() { printf "$ABORT\n" "$1" >&2; usage; }
 
 PROJECT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-RENDER_TEMPLATE_FILE="$PROJECT_DIR/sql/renderer.sql"
+RENDER_TEMPLATE_FILE="$PROJECT_DIR/renderer.sql"
 
 TEST_FILES=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    -r|--render-template)
+      RENDER_TEMPLATE_FILE="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       ;;
@@ -49,7 +55,7 @@ if [[ $N_TESTS -ge 260 ]]; then
 fi
 
 function uglify() {
-  sed -E "s/--.*//" "${1:-/dev/stdin}" | tr '\n\n' '\n'
+  sed -E "s/--.*//;s/;//" "${1:-/dev/stdin}" | tr '\n\n' '\n'
 }
 
 RENDER_TEMPLATE="$(< $RENDER_TEMPLATE_FILE)"

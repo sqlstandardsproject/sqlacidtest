@@ -47,5 +47,9 @@ python3 test_binary.py --program duckdb
 ## Contribute
 We welcome contributions with additional test cases. To add a test case, add a `.sql` file in the `sql` directory and run the `stitch.sh` script.
 
+```bash
+./stitch.sh tests/**/*.sql > acid.sql
+```
+
 ## Credits
 The project was started as part of the [Dagstuhl Seminar 23441 : Ensuring the Reliability and Robustness of Database Management Systems](https://www.dagstuhl.de/en/seminars/seminar-calendar/seminar-details/23441)
