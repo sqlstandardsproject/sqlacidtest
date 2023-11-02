@@ -227,7 +227,16 @@ select (
 ) as result
 ) testcase(result)
 UNION ALL
-select index as test, true as result from generate_series(15,260) s(index) 
+select 15 as test, result from (
+-- check that conjunctions correctly handle NULL values
+SELECT
+    NULL OR x>0
+    AND
+    NOT (NULL AND x<0) AS result
+FROM (VALUES (42)) AS t(x)
+) testcase(result)
+UNION ALL
+select index as test, true as result from generate_series(16,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
