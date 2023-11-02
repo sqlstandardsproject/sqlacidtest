@@ -6,19 +6,7 @@ from (
 
 -- the query itself
 select sum(x) as queryresult
-from (
-	SELECT 1 AS x
-	UNION ALL
-	SELECT 2
-	UNION ALL
-	SELECT 4
-	UNION ALL
-	SELECT 8
-	UNION ALL
-	SELECT NULL) AS s
-where exists(select * from (
-	SELECT 2 AS y
-	UNION ALL
-	SELECT 8) AS t where x=y) or (x<3)
+from (values(1),(2),(4),(8),(NULL)) s(x)
+where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
