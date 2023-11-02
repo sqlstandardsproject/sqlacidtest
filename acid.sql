@@ -91,6 +91,40 @@ SELECT
     AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
   THEN 'T' ELSE 'F' END AS result
 ) testcase(result) UNION ALL select 4 as test, result from (
+-- tests/compliance/test018.sql
+
+
+
+
+select case when (
+       0    BETWEEN -1    AND  1    AND
+       0.99 BETWEEN  0    AND  1    AND
+
+       0    BETWEEN  0    AND  0    AND
+       1    BETWEEN  0    AND  1    AND
+       0    BETWEEN  0    AND  1    AND
+
+      -0    BETWEEN -0    AND +0    AND
+      -0.00 BETWEEN -0.00 AND +0.00 AND
+
+       1.00 BETWEEN  0    AND  1.00 AND
+  NOT  1.01 BETWEEN  0    AND  1    AND
+
+      'a'   BETWEEN 'a'   AND 'b'   AND
+      'ab'  BETWEEN 'a'   AND 'b'   AND
+      'b'   BETWEEN 'a'   AND 'b'   AND
+  NOT 'bla' BETWEEN 'a'   AND 'b'   AND
+
+  (NULL BETWEEN NULL AND NULL) IS NULL AND
+  (NULL BETWEEN 0    AND NULL) IS NULL AND
+  (0    BETWEEN 0    AND NULL) IS NULL AND
+  (NULL BETWEEN 0    AND 1   ) IS NULL AND
+
+  TRUE  BETWEEN FALSE AND TRUE AND
+  FALSE BETWEEN FALSE AND TRUE
+
+) then 'T' else 'F' end as result from (values (1)) as t
+) testcase(result) UNION ALL select 5 as test, result from (
 -- tests/compliance/test019.sql
 
 
@@ -132,7 +166,7 @@ SELECT CASE WHEN (
   CAST('-1.2E-3' AS NUMERIC(10,3)) = CAST(-1.2E-3 AS NUMERIC(10,3))
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) something(x)
-) testcase(result) UNION ALL select 5 as test, result from (
+) testcase(result) UNION ALL select 6 as test, result from (
 -- tests/compliance/test020.sql
 
 
@@ -148,7 +182,7 @@ FROM (VALUES (1)) something(x)
 
 SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
-) testcase(result) UNION ALL select 6 as test, result from (
+) testcase(result) UNION ALL select 7 as test, result from (
 -- tests/compliance/test021.sql
 
 
@@ -164,7 +198,7 @@ FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
 
 SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES ('''')) AS t(x)
-) testcase(result) UNION ALL select 7 as test, result from (
+) testcase(result) UNION ALL select 8 as test, result from (
 -- tests/compliance/test023.sql
 
 
@@ -186,6 +220,7 @@ SELECT CASE WHEN
        THEN 'T'
        ELSE 'F'
        END
+<<<<<<< HEAD
 ) testcase(result) UNION ALL select 8 as test, result from (
 -- tests/compliance/test024.sql
 
@@ -196,6 +231,8 @@ SELECT CASE WHEN
 	NOT('hello' <> x)
 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES ('hello')) AS t(x)
+=======
+>>>>>>> main
 ) testcase(result) UNION ALL select 9 as test, result from (
 -- tests/convention/test001.sql
 
@@ -409,6 +446,7 @@ FROM (VALUES (42)) AS t(x)
 
 SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
 FROM (VALUES (42)) AS t(hello)
+<<<<<<< HEAD
 ) testcase(result) UNION ALL select 24 as test, result from (
 -- tests/convention/test018.sql
 select case when (1=1      
@@ -441,6 +479,9 @@ select case when (1=1
     
 ) then 'T' else 'F' end as result from (values (1)) as t
 ) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(25,260) s(index) 
+=======
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(24,260) s(index) 
+>>>>>>> main
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
