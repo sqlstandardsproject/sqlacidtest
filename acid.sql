@@ -95,6 +95,8 @@ group by x
 
 
 
+
+
 select case when s = 'abcdef' then 'T' else 'F' end as result
 from (
 
@@ -223,6 +225,8 @@ SELECT case when
 FROM (VALUES (42)) AS t(x)
 ) testcase(result) UNION ALL select 16 as test, result from (
 -- sql/test016.sql
+
+
 
 SELECT
   CASE WHEN
