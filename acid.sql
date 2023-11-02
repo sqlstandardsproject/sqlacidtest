@@ -238,7 +238,12 @@ SELECT
     AND CAST(NULL AS DOUBLE PRECISION) IS NULL
     AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
   THEN 'T' ELSE 'F' END AS result
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(17,260) s(index) 
+) testcase(result) UNION ALL select 17 as test, result from (
+-- sql/test017.sql
+
+SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
+FROM (SELECT 42 AS hello) AS t
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(18,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
