@@ -281,19 +281,29 @@ select case when (1=1
 ) testcase(result) UNION ALL select 19 as test, result from (
 -- sql/test019.sql
 
+
+
+
+
+
+
+
 SELECT CASE WHEN (
-  CAST(' 1  '    AS NUMERIC(10,3)) = CAST( 1      AS NUMERIC(10,3)) AND
-  CAST(' 1. '    AS NUMERIC(10,3)) = CAST( 1.     AS NUMERIC(10,3)) AND
+  CAST('+0'      AS NUMERIC(10,3)) = CAST(+0      AS NUMERIC(10,3)) AND
+  CAST('-0'      AS NUMERIC(10,3)) = CAST(-0      AS NUMERIC(10,3)) AND
+
+  CAST(' 1'      AS NUMERIC(10,3)) = CAST( 1      AS NUMERIC(10,3)) AND
+  CAST(' 1.'     AS NUMERIC(10,3)) = CAST( 1.     AS NUMERIC(10,3)) AND
   CAST(' 1.2'    AS NUMERIC(10,3)) = CAST( 1.2    AS NUMERIC(10,3)) AND
   CAST('  .2'    AS NUMERIC(10,3)) = CAST(  .2    AS NUMERIC(10,3)) AND
 
-  CAST('+1  '    AS NUMERIC(10,3)) = CAST(+1      AS NUMERIC(10,3)) AND
-  CAST('+1. '    AS NUMERIC(10,3)) = CAST(+1.     AS NUMERIC(10,3)) AND
+  CAST('+1'      AS NUMERIC(10,3)) = CAST(+1      AS NUMERIC(10,3)) AND
+  CAST('+1.'     AS NUMERIC(10,3)) = CAST(+1.     AS NUMERIC(10,3)) AND
   CAST('+1.2'    AS NUMERIC(10,3)) = CAST(+1.2    AS NUMERIC(10,3)) AND
   CAST('+.2'     AS NUMERIC(10,3)) = CAST( +.2    AS NUMERIC(10,3)) AND
 
-  CAST('-1  '    AS NUMERIC(10,3)) = CAST(-1      AS NUMERIC(10,3)) AND
-  CAST('-1. '    AS NUMERIC(10,3)) = CAST(-1.     AS NUMERIC(10,3)) AND
+  CAST('-1'      AS NUMERIC(10,3)) = CAST(-1      AS NUMERIC(10,3)) AND
+  CAST('-1.'     AS NUMERIC(10,3)) = CAST(-1.     AS NUMERIC(10,3)) AND
   CAST('-1.2'    AS NUMERIC(10,3)) = CAST(-1.2    AS NUMERIC(10,3)) AND
   CAST('-.2'     AS NUMERIC(10,3)) = CAST( -.2    AS NUMERIC(10,3)) AND
 
