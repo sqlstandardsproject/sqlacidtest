@@ -2,6 +2,8 @@
 with testresults as (
   
 select 1 as test, result from (
+-- sql/test001.sql
+
 
 
 select case when queryresult = 11 then 'T' else 'F' end as result
@@ -12,9 +14,15 @@ select sum(x) as queryresult
 from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
-) test) testcase(result) UNION ALL select 2 as test, result from (
+) test
+) testcase(result) UNION ALL select 2 as test, result from (
+-- sql/test002.sql
 
-SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result) testcase(result) UNION ALL select 3 as test, result from (
+
+SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
+) testcase(result) UNION ALL select 3 as test, result from (
+-- sql/test003.sql
+
 
 
 select case when (r1=5) and (r2=40) then 'T' else 'F' end as result
@@ -27,9 +35,15 @@ select i, x=some(select a from (values(1,1),(2,2),(3,3),(4,4),(NULL,5)) t(a,b) w
 from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
-) test) testcase(result) UNION ALL select 4 as test, result from (
+) test
+) testcase(result) UNION ALL select 4 as test, result from (
+-- sql/test004.sql
 
-SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result) testcase(result) UNION ALL select 5 as test, result from (
+
+SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
+) testcase(result) UNION ALL select 5 as test, result from (
+-- sql/test005.sql
+
 
 
 select case when count(x)=8 then 'T' else 'F' end as result
@@ -43,7 +57,10 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
-) test) testcase(result) UNION ALL select 6 as test, result from (
+) test
+) testcase(result) UNION ALL select 6 as test, result from (
+-- sql/test006.sql
+
 
 
 select case when s*10000000000000000 = 100000000000000 then 'T' else 'F' end as result
@@ -54,7 +71,10 @@ from (
 select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
-) test) testcase(result) UNION ALL select 7 as test, result from (
+) test
+) testcase(result) UNION ALL select 7 as test, result from (
+-- sql/test007.sql
+
 
 
 select case when (count(*) = 3) and (count(x) = 3) then 'T' else 'F' end as result
@@ -69,7 +89,10 @@ from ((select * from (values(1),(2),(2),(3),(3),(3),(4),(4),(4),(4)) s(x) except
 group by x
 
 ) s on (x=a and c=b)
-) test) testcase(result) UNION ALL select 8 as test, result from (
+) test
+) testcase(result) UNION ALL select 8 as test, result from (
+-- sql/test008.sql
+
 
 
 select case when s = 'abcdef' then 'T' else 'F' end as result
@@ -78,7 +101,10 @@ from (
 
 values ('abc' || 'def')
 
-) t(s)) testcase(result) UNION ALL select 9 as test, result from (
+) t(s)
+) testcase(result) UNION ALL select 9 as test, result from (
+-- sql/test009.sql
+
 
 SELECT case when
 	su = 70003 AND
@@ -102,26 +128,38 @@ SELECT
 	avg(x) as av, 
 	count(x) as ct, 
 	count(*) as cs, 
-	min(CAST (x as VARCHAR)) as mis, 
-	max(CAST (x as VARCHAR)) as mas,
+	min(CAST (x as VARCHAR(10))) as mis, 
+	max(CAST (x as VARCHAR(10))) as mas,
 	sum(distinct x) as sd, 
 	count(distinct x) as cd,
 	avg(distinct x) as ad
 
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
-) test) testcase(result) UNION ALL select 10 as test, result from (
+) test
+) testcase(result) UNION ALL select 10 as test, result from (
+-- sql/test010.sql
+
 
 SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
-       CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result) testcase(result) UNION ALL select 11 as test, result from (SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
+       CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result
+) testcase(result) UNION ALL select 11 as test, result from (
+-- sql/test011.sql
+SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT) AS x
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
-) AS t) testcase(result) UNION ALL select 12 as test, result from (
+) AS t
+) testcase(result) UNION ALL select 12 as test, result from (
+-- sql/test012.sql
+
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
-FROM (VALUES (42)) AS t(x)) testcase(result) UNION ALL select 13 as test, result from (
+FROM (VALUES (42)) AS t(x)
+) testcase(result) UNION ALL select 13 as test, result from (
+-- sql/test013.sql
+
 
 
 select case when (state='924875136138624795765391842546713928812469357397582614651238479489157263273946581') then 'T' else 'F' end as result
@@ -146,7 +184,10 @@ with recursive
         ) c)
 select state from sudoku where next=0
 
-) test) testcase(result) UNION ALL select 14 as test, result from (
+) test
+) testcase(result) UNION ALL select 14 as test, result from (
+-- sql/test014.sql
+
 select case when (
 	
 	(1+2*3) = (1+(2*3)) and
@@ -171,12 +212,16 @@ select case when (
 
 	
 	(not true or true) = ((not true) or true)
-) then 'T' else 'F' end as result) testcase(result) UNION ALL select 15 as test, result from (
+) then 'T' else 'F' end as result
+) testcase(result) UNION ALL select 15 as test, result from (
+-- sql/test015.sql
+
 SELECT case when
     NULL OR x>0
     AND
     NOT (NULL AND x<0) then 'T' else 'F' end AS result
-FROM (VALUES (42)) AS t(x)) testcase(result) UNION ALL select 16 as test, result from () testcase(result) UNION ALL select index as test, true as result from generate_series(17,260) s(index) 
+FROM (VALUES (42)) AS t(x)
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(16,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
