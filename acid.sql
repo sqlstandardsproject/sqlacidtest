@@ -305,7 +305,7 @@ SELECT CASE WHEN (
   CAST('+1.2E-3' AS NUMERIC) = +1.2E-3 AND
   CAST('-1.2E-3' AS NUMERIC) = -1.2E-3
 ) THEN 'T' ELSE 'F' END
-FROM (VALUES (1)) something
+FROM (VALUES (1)) something(x)
 ) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(20,260) s(index) 
 )
 -- render the result

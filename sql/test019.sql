@@ -27,4 +27,4 @@ SELECT CASE WHEN (
   CAST('+1.2E-3' AS NUMERIC) = +1.2E-3 AND
   CAST('-1.2E-3' AS NUMERIC) = -1.2E-3
 ) THEN 'T' ELSE 'F' END
-FROM (VALUES (1)) something
+FROM (VALUES (1)) something(x)
