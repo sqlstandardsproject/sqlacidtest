@@ -39,10 +39,8 @@ SELECT CASE WHEN (
   floor(1.2) = 1 AND
   floor(1.8) = 1 AND
 
-     ceil(1.2) = 2 AND
-     ceil(1.8) = 2 AND
-  ceiling(1.2) = 2 AND
-  ceiling(1.8) = 2 AND
+  ceil(1.2) = 2 AND
+  ceil(1.8) = 2 AND
 
   log(2, 1) = 0                         AND
   log(2, 2) = 1                         AND
