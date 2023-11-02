@@ -187,6 +187,16 @@ SELECT CASE WHEN
        ELSE 'F'
        END
 ) testcase(result) UNION ALL select 8 as test, result from (
+-- tests/compliance/test024.sql
+
+SELECT CASE WHEN 
+	LENGTH(x)=5 AND
+	POSITION ('l' IN x)=3 AND
+	'hello' = x AND
+	NOT('hello' <> x)
+THEN 'T' ELSE 'F' END AS result
+FROM (VALUES ('hello')) AS t(x)
+) testcase(result) UNION ALL select 9 as test, result from (
 -- tests/convention/test001.sql
 
 
@@ -200,12 +210,12 @@ from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
-) testcase(result) UNION ALL select 9 as test, result from (
+) testcase(result) UNION ALL select 10 as test, result from (
 -- tests/convention/test002.sql
 
 
 SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 10 as test, result from (
+) testcase(result) UNION ALL select 11 as test, result from (
 -- tests/convention/test003.sql
 
 
@@ -221,12 +231,12 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
 ) test
-) testcase(result) UNION ALL select 11 as test, result from (
+) testcase(result) UNION ALL select 12 as test, result from (
 -- tests/convention/test004.sql
 
 
 SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 12 as test, result from (
+) testcase(result) UNION ALL select 13 as test, result from (
 -- tests/convention/test005.sql
 
 
@@ -243,7 +253,7 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
 ) test
-) testcase(result) UNION ALL select 13 as test, result from (
+) testcase(result) UNION ALL select 14 as test, result from (
 -- tests/convention/test006.sql
 
 
@@ -257,7 +267,7 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
 ) test
-) testcase(result) UNION ALL select 14 as test, result from (
+) testcase(result) UNION ALL select 15 as test, result from (
 -- tests/convention/test007.sql
 
 
@@ -275,7 +285,7 @@ group by x
 
 ) s on (x=a and c=b)
 ) test
-) testcase(result) UNION ALL select 15 as test, result from (
+) testcase(result) UNION ALL select 16 as test, result from (
 -- tests/convention/test009.sql
 
 
@@ -310,14 +320,14 @@ SELECT
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
 ) test
-) testcase(result) UNION ALL select 16 as test, result from (
+) testcase(result) UNION ALL select 17 as test, result from (
 -- tests/convention/test010.sql
 
 
 SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
        CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 17 as test, result from (
+) testcase(result) UNION ALL select 18 as test, result from (
 -- tests/convention/test011.sql
 SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
@@ -325,12 +335,12 @@ FROM (
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
-) testcase(result) UNION ALL select 18 as test, result from (
+) testcase(result) UNION ALL select 19 as test, result from (
 -- tests/convention/test012.sql
 
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 19 as test, result from (
+) testcase(result) UNION ALL select 20 as test, result from (
 -- tests/convention/test013.sql
 
 
@@ -358,7 +368,7 @@ with recursive
 select state from sudoku where next=0
 
 ) test
-) testcase(result) UNION ALL select 20 as test, result from (
+) testcase(result) UNION ALL select 21 as test, result from (
 -- tests/convention/test014.sql
 
 select case when (
@@ -386,7 +396,7 @@ select case when (
 	
 	(not true or true) = ((not true) or true)
 ) then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 21 as test, result from (
+) testcase(result) UNION ALL select 22 as test, result from (
 -- tests/convention/test015.sql
 
 SELECT case when
@@ -394,12 +404,12 @@ SELECT case when
     AND
     NOT (NULL AND x<0) then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 22 as test, result from (
+) testcase(result) UNION ALL select 23 as test, result from (
 -- tests/convention/test017.sql
 
 SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
 FROM (VALUES (42)) AS t(hello)
-) testcase(result) UNION ALL select 23 as test, result from (
+) testcase(result) UNION ALL select 24 as test, result from (
 -- tests/convention/test018.sql
 select case when (1=1      
   AND 0 BETWEEN -1 AND 1
@@ -430,7 +440,7 @@ select case when (1=1
   AND FALSE BETWEEN FALSE AND TRUE
     
 ) then 'T' else 'F' end as result from (values (1)) as t
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(24,260) s(index) 
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(25,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
