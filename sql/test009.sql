@@ -1,6 +1,6 @@
 -- check aggregate behavior
 -- result header
-SELECT
+SELECT case when
 	su = 70003 AND
 	mi = 20001 AND
 	ma = 30001 AND
@@ -12,7 +12,7 @@ SELECT
 	sd = 50002 AND
 	cd = 2 AND
 	CAST(ad as INTEGER) = 25001
-	 AS result
+	then 'T' else 'F' end AS result
 FROM (
 
 SELECT

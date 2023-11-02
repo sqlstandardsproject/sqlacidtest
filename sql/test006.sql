@@ -1,7 +1,7 @@
 -- check that decimal number behave sane
 
 -- result header
-select s*10000000000000000 = 100000000000000 as result
+select case when s*10000000000000000 = 100000000000000 then 'T' else 'F' end as result
 from (
 
 

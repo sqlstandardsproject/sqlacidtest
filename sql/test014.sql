@@ -1,5 +1,5 @@
 -- check that precedence matches the standard precedence order
-select (
+select case when (
 	-- * has higher precedence than binary +
 	(1+2*3) = (1+(2*3)) and
 
@@ -23,4 +23,4 @@ select (
 
 	-- OR has lower preceedence than the logical negation
 	(not true or true) = ((not true) or true)
-) as result
+) then 'T' else 'F' end as result

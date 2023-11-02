@@ -1,7 +1,7 @@
 -- check that multi set operations are supported
 
 -- result header
-select (count(*) = 3) and (count(x) = 3) as result
+select case when (count(*) = 3) and (count(x) = 3) then 'T' else 'F' end as result
 from (
 (values(2,2),(3,1),(4,1)) expected(a,b)
 full outer join (

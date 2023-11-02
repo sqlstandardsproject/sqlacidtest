@@ -5,7 +5,7 @@ select 1 as test, result from (
 -- check that the engine handles existential queries in disjunctions
 
 -- result header
-select queryresult = 11 as result
+select case when queryresult = 11 then 'T' else 'F' end as result
 from (
 
 -- the query itself
@@ -19,14 +19,14 @@ UNION ALL
 select 2 as test, result from (
 -- test that casting to integer rounds and does not truncate
 
-SELECT CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 as result
+SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
 ) testcase(result)
 UNION ALL
 select 3 as test, result from (
 -- check that that quantified expressions return NULL values as needed
 
 -- result header
-select (r1=5) and (r2=40) as result
+select case when (r1=5) and (r2=40) then 'T' else 'F' end as result
 from (
 
 -- the query itself
@@ -42,14 +42,14 @@ UNION ALL
 select 4 as test, result from (
 -- a string may be empty but that doesn't make it NULL
 
-SELECT '' IS NOT NULL AS result
+SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
 ) testcase(result)
 UNION ALL
 select 5 as test, result from (
 -- check that full outer joins are decorrelated correctly
 
 -- result header
-select count(x)=8 as result
+select case when count(x)=8 then 'T' else 'F' end as result
 from (
 (values(1,NULL,2),(1,NULL,3),(2,1,NULL),(2,NULL,2),(2,NULL,3),(3,1,NULL),(3,2,2),(3,NULL,3)) expected(a,b,c)
 left outer join (
@@ -67,7 +67,7 @@ select 6 as test, result from (
 -- check that decimal number behave sane
 
 -- result header
-select s*10000000000000000 = 100000000000000 as result
+select case when s*10000000000000000 = 100000000000000 then 'T' else 'F' end as result
 from (
 
 
@@ -82,7 +82,7 @@ select 7 as test, result from (
 -- check that multi set operations are supported
 
 -- result header
-select (count(*) = 3) and (count(x) = 3) as result
+select case when (count(*) = 3) and (count(x) = 3) then 'T' else 'F' end as result
 from (
 (values(2,2),(3,1),(4,1)) expected(a,b)
 full outer join (
@@ -101,7 +101,7 @@ select 8 as test, result from (
 -- check that || is actually the string concat operator...
 
 -- result header
-select s = 'abcdef' as result
+select case when s = 'abcdef' then 'T' else 'F' end as result
 from (
 
 -- the query itself
@@ -113,7 +113,7 @@ UNION ALL
 select 9 as test, result from (
 -- check aggregate behavior
 -- result header
-SELECT
+SELECT case when
 	su = 70003 AND
 	mi = 20001 AND
 	ma = 30001 AND
@@ -125,7 +125,7 @@ SELECT
 	sd = 50002 AND
 	cd = 2 AND
 	CAST(ad as INTEGER) = 25001
-	 AS result
+	then 'T' else 'F' end AS result
 FROM (
 
 SELECT
@@ -149,13 +149,13 @@ UNION ALL
 select 10 as test, result from (
 -- check for the space-padding semantics of type char(n)
 
-SELECT CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
+SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
-       CAST('123' AS text)    <> CAST('123 ' AS text) AS result
+       CAST('123' AS text)    <> CAST('123 ' AS text) then 'T' else 'F' end AS result
 ) testcase(result)
 UNION ALL
 select 11 as test, result from (
-SELECT AVG(x)>0 AS result
+SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT) AS x
 	UNION ALL
@@ -165,7 +165,7 @@ FROM (
 UNION ALL
 select 12 as test, result from (
 -- check that aggregations are correctly extracted from a subquery
-SELECT (SELECT SUM(x))=42 AS result
+SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
 ) testcase(result)
 UNION ALL
@@ -173,7 +173,7 @@ select 13 as test, result from (
 -- check that recursive queries work
 
 -- result header
-select (state='924875136138624795765391842546713928812469357397582614651238479489157263273946581') as result
+select case when (state='924875136138624795765391842546713928812469357397582614651238479489157263273946581') then 'T' else 'F' end as result
 from (
 
 
@@ -200,7 +200,7 @@ select state from sudoku where next=0
 UNION ALL
 select 14 as test, result from (
 -- check that precedence matches the standard precedence order
-select (
+select case when (
 	-- * has higher precedence than binary +
 	(1+2*3) = (1+(2*3)) and
 
@@ -224,19 +224,19 @@ select (
 
 	-- OR has lower preceedence than the logical negation
 	(not true or true) = ((not true) or true)
-) as result
+) then 'T' else 'F' end as result
 ) testcase(result)
 UNION ALL
 select 15 as test, result from (
 -- check that conjunctions correctly handle NULL values
-SELECT
+SELECT case when
     NULL OR x>0
     AND
-    NOT (NULL AND x<0) AS result
+    NOT (NULL AND x<0) then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
 ) testcase(result)
 UNION ALL
-select index as test, true as result from generate_series(16,260) s(index) 
+select index as test, 'T' as result from generate_series(16,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
@@ -256,7 +256,7 @@ select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as o
 ) image(line, image) left outer join (
 select line, sum(cast(power(2,ofs) as integer)) as state
   from (select line, test-1-20*line as ofs, test, result
-  from (select cast(floor((test-1)/20) as integer) as line, test, result from testresults where result) s
+  from (select cast(floor((test-1)/20) as integer) as line, test, result from testresults where result = 'T') s
   ) s group by line) s
 on image.line=s.line order by image.line;
 

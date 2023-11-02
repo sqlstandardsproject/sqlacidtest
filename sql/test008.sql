@@ -1,7 +1,7 @@
 -- check that || is actually the string concat operator...
 
 -- result header
-select s = 'abcdef' as result
+select case when s = 'abcdef' then 'T' else 'F' end as result
 from (
 
 -- the query itself

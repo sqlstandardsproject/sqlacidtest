@@ -1,7 +1,7 @@
 -- check that the engine handles existential queries in disjunctions
 
 -- result header
-select queryresult = 11 as result
+select case when queryresult = 11 then 'T' else 'F' end as result
 from (
 
 -- the query itself

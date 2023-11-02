@@ -1,4 +1,4 @@
-SELECT AVG(x)>0 AS result
+SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
 	SELECT CAST(9223372036854775807 AS BIGINT) AS x
 	UNION ALL
