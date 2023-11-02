@@ -16,6 +16,61 @@ values ('abc' || 'def')
 
 ) t(s)
 ) testcase(result) UNION ALL select 2 as test, result from (
+-- tests/compliance/test014.sql
+-- check that precedence matches the standard precedence order
+-- associativity rules for arithmetic is defined in 6.27
+select case when (
+	-- * has higher precedence than binary +
+	(1+2*3) = (1+(2*3)) and
+
+	-- / has higher precedence than binary -
+	(2-3/4) = (2-(3/4)) and
+
+	-- Left Associativity of /*
+	(2/3/3) = ((2/3)/3) and
+	(2/3*3) = ((2/3)*3) and
+
+	-- < > = <> has lower precedence than binary -/+*
+	(1+2 < 2+2) = ((1+2) < (2+2))  and
+	(1+2 <= 1+2) = ((1+2) <= (1+2))  and
+	(2+2 > 1+2) = ((2+2) > (1+2))  and
+	(2+2 >= 1+2) = ((2+2) >= (1+2))  and
+	(2+2 <> 1+2) = ((2+2) <> (1+2))	and
+
+	-- in between  has lower precedence than binary,unary operator
+	(2 between 2-1 and 2+1) and
+	(2 + 3 in (3+2)) and
+
+	-- OR has lower preceedence than the logical negation
+	(not true or true) = ((not true) or true)
+) then 'T' else 'F' end as result
+) testcase(result) UNION ALL select 3 as test, result from (
+-- tests/compliance/test015.sql
+-- check that conjunctions correctly handle NULL values
+-- 6.35 - Truth table for AND/OR/IS
+SELECT case when
+    (TRUE  AND TRUE)   IS TRUE    AND
+    (TRUE  AND FALSE)  IS FALSE   AND
+    (TRUE  AND NULL)   IS NULL    AND
+    (FALSE AND TRUE)   IS FALSE   AND
+    (FALSE AND FALSE)  IS FALSE   AND
+    (FALSE AND NULL)   IS FALSE   AND
+    (NULL  AND TRUE)   IS NULL    AND
+    (NULL  AND FALSE)  IS FALSE   AND
+    (NULL  AND NULL)   IS NULL    AND
+
+    (TRUE  OR TRUE)   IS TRUE    AND
+    (TRUE  OR FALSE)  IS TRUE    AND
+    (TRUE  OR NULL)   IS TRUE    AND
+    (FALSE OR TRUE)   IS TRUE    AND
+    (FALSE OR FALSE)  IS FALSE   AND
+    (FALSE OR NULL)   IS NULL    AND
+    (NULL  OR TRUE)   IS TRUE    AND
+    (NULL  OR FALSE)  IS NULL    AND
+    (NULL  OR NULL)   IS NULL
+then 'T' else 'F' end as result
+FROM (VALUES (42)) AS t
+) testcase(result) UNION ALL select 4 as test, result from (
 -- tests/compliance/test016.sql
 -- check standard type casts
 -- CD 9075-2:201?(E)
@@ -34,7 +89,12 @@ SELECT
     AND CAST(NULL AS DOUBLE PRECISION) IS NULL
     AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
   THEN 'T' ELSE 'F' END AS result
-) testcase(result) UNION ALL select 3 as test, result from (
+) testcase(result) UNION ALL select 5 as test, result from (
+-- tests/compliance/test017.sql
+-- check case insensitivity in identifiers
+SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
+FROM (VALUES (42)) AS t(hello)
+) testcase(result) UNION ALL select 6 as test, result from (
 -- tests/compliance/test018.sql
 -- check standard behaviour of between predicates
 -- CD 9075-2:201?(E)
@@ -68,7 +128,7 @@ select case when (
   FALSE BETWEEN FALSE AND TRUE
 
 ) then 'T' else 'F' end as result from (values (1)) as t
-) testcase(result) UNION ALL select 4 as test, result from (
+) testcase(result) UNION ALL select 7 as test, result from (
 -- tests/compliance/test019.sql
 -- check string-to-number casting
 
@@ -110,7 +170,7 @@ SELECT CASE WHEN (
   CAST('-1.2E-3' AS NUMERIC(10,3)) = CAST(-1.2E-3 AS NUMERIC(10,3))
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) something(x)
-) testcase(result) UNION ALL select 5 as test, result from (
+) testcase(result) UNION ALL select 8 as test, result from (
 -- tests/compliance/test020.sql
 -- SQL standard compliant identifiers
 -- delimited identifiers are defined in the grammar as follows:
@@ -126,7 +186,7 @@ FROM (VALUES (1)) something(x)
 -- in other words, delimited identifiers are started/terminated with double quotes, and double quotes are escaped with two consecutive double quotes
 SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
-) testcase(result) UNION ALL select 6 as test, result from (
+) testcase(result) UNION ALL select 9 as test, result from (
 -- tests/compliance/test021.sql
 -- SQL standard compliant string escape
 -- string literals are defined in the grammar as follows:
@@ -142,7 +202,7 @@ FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
 -- in other words, string literals are started/terminated with quotes, and quotes are escaped with two consecutive quotes
 SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES ('''')) AS t(x)
-) testcase(result) UNION ALL select 7 as test, result from (
+) testcase(result) UNION ALL select 10 as test, result from (
 -- tests/compliance/test022.sql
 -- CD 9075-2:201?(E)
 -- 8.5 <like predicate> 
@@ -198,7 +258,7 @@ SELECT CASE WHEN (1=1
                   
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) t(x)
-) testcase(result) UNION ALL select 8 as test, result from (
+) testcase(result) UNION ALL select 11 as test, result from (
 -- tests/compliance/test023.sql
 -- CD 9075-2:201?(E)
 -- 8.15 <distinct predicate>
@@ -220,7 +280,7 @@ SELECT CASE WHEN
        THEN 'T'
        ELSE 'F'
        END
-) testcase(result) UNION ALL select 9 as test, result from (
+) testcase(result) UNION ALL select 12 as test, result from (
 -- tests/compliance/test024.sql
 -- Section 4.2.3.3
 SELECT CASE WHEN 
@@ -230,7 +290,7 @@ SELECT CASE WHEN
 	NOT('hello' <> x)
 THEN 'T' ELSE 'F' END AS result
 FROM (VALUES ('hello')) AS t(x)
-) testcase(result) UNION ALL select 10 as test, result from (
+) testcase(result) UNION ALL select 13 as test, result from (
 -- tests/compliance/test025.sql
 -- extract
 -- date/time/timestamp literals are defined in 5.3 <literal>
@@ -258,7 +318,7 @@ FROM (VALUES (
 	TIMESTAMP '2000-02-03 12:23:45',
 	TIME '12:23:45'
 )) AS t(date_col, ts_col, time_col)
-) testcase(result) UNION ALL select 11 as test, result from (
+) testcase(result) UNION ALL select 14 as test, result from (
 -- tests/convention/test001.sql
 -- check that the engine handles existential queries in disjunctions
 
@@ -272,12 +332,12 @@ from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
-) testcase(result) UNION ALL select 12 as test, result from (
+) testcase(result) UNION ALL select 15 as test, result from (
 -- tests/convention/test002.sql
 -- test that casting to integer rounds and does not truncate
 
 SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 13 as test, result from (
+) testcase(result) UNION ALL select 16 as test, result from (
 -- tests/convention/test003.sql
 -- check that that quantified expressions return NULL values as needed
 
@@ -293,12 +353,12 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
 ) test
-) testcase(result) UNION ALL select 14 as test, result from (
+) testcase(result) UNION ALL select 17 as test, result from (
 -- tests/convention/test004.sql
 -- a string may be empty but that doesn't make it NULL
 
 SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 15 as test, result from (
+) testcase(result) UNION ALL select 18 as test, result from (
 -- tests/convention/test005.sql
 -- check that full outer joins are decorrelated correctly
 
@@ -315,7 +375,7 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
 ) test
-) testcase(result) UNION ALL select 16 as test, result from (
+) testcase(result) UNION ALL select 19 as test, result from (
 -- tests/convention/test006.sql
 -- check that decimal number behave sane
 
@@ -329,7 +389,7 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
 ) test
-) testcase(result) UNION ALL select 17 as test, result from (
+) testcase(result) UNION ALL select 20 as test, result from (
 -- tests/convention/test007.sql
 -- check that multi set operations are supported
 
@@ -347,7 +407,7 @@ group by x
 
 ) s on (x=a and c=b)
 ) test
-) testcase(result) UNION ALL select 18 as test, result from (
+) testcase(result) UNION ALL select 21 as test, result from (
 -- tests/convention/test009.sql
 -- check aggregate behavior
 -- result header
@@ -382,14 +442,14 @@ SELECT
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
 ) test
-) testcase(result) UNION ALL select 19 as test, result from (
+) testcase(result) UNION ALL select 22 as test, result from (
 -- tests/convention/test010.sql
 -- check for the space-padding semantics of type char(n)
 
 SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
        CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 20 as test, result from (
+) testcase(result) UNION ALL select 23 as test, result from (
 -- tests/convention/test011.sql
 SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
@@ -397,12 +457,12 @@ FROM (
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
-) testcase(result) UNION ALL select 21 as test, result from (
+) testcase(result) UNION ALL select 24 as test, result from (
 -- tests/convention/test012.sql
 -- check that aggregations are correctly extracted from a subquery
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 22 as test, result from (
+) testcase(result) UNION ALL select 25 as test, result from (
 -- tests/convention/test013.sql
 -- check that recursive queries work
 
@@ -430,47 +490,6 @@ with recursive
 select state from sudoku where next=0
 
 ) test
-) testcase(result) UNION ALL select 23 as test, result from (
--- tests/convention/test014.sql
--- check that precedence matches the standard precedence order
-select case when (
-	-- * has higher precedence than binary +
-	(1+2*3) = (1+(2*3)) and
-
-	-- / has higher precedence than binary -
-	(2-3/4) = (2-(3/4)) and
-
-	-- Left Associativity of /*
-	(2/3/3) = ((2/3)/3) and
-	(2/3*3) = ((2/3)*3) and
-
-	-- < > = <> has lower precedence than binary -/+*
-	(1+2 < 2+2) = ((1+2) < (2+2))  and
-	(1+2 <= 1+2) = ((1+2) <= (1+2))  and
-	(2+2 > 1+2) = ((2+2) > (1+2))  and
-	(2+2 >= 1+2) = ((2+2) >= (1+2))  and
-	(2+2 <> 1+2) = ((2+2) <> (1+2))	and
-
-	-- in between  has lower precedence than binary,unary operator
-	(2 between 2-1 and 2+1) and
-	(2 + 3 in (3+2)) and
-
-	-- OR has lower preceedence than the logical negation
-	(not true or true) = ((not true) or true)
-) then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 24 as test, result from (
--- tests/convention/test015.sql
--- check that conjunctions correctly handle NULL values
-SELECT case when
-    NULL OR x>0
-    AND
-    NOT (NULL AND x<0) then 'T' else 'F' end AS result
-FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 25 as test, result from (
--- tests/convention/test017.sql
--- check case insensitivity in identifiers
-SELECT CASE WHEN T.HeLlO=t.hello THEN 'T' ELSE 'F' END AS result
-FROM (VALUES (42)) AS t(hello)
 ) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(26,260) s(index) 
 )
 -- render the result
