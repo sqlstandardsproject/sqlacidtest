@@ -1,4 +1,6 @@
 -- check standard type casts
+-- CD 9075-2:201?(E)
+-- 4.1.2 Naming of predefined types
 SELECT
   CASE WHEN
         CAST(NULL AS CHARACTER) IS NULL
