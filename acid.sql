@@ -319,6 +319,93 @@ FROM (VALUES (
 	TIME '12:23:45'
 )) AS t(date_col, ts_col, time_col)
 ) testcase(result) UNION ALL select 14 as test, result from (
+-- tests/compliance/test027.sql
+-- check math functions defined in the standard
+
+-- ISO 9075-2:2023(E)
+-- 6.31 <numeric value function>
+
+SELECT CASE WHEN (
+  abs( 0) = 0 AND
+  abs(-1) = 1 AND
+  abs(-1) = 1 AND
+
+  mod( 2, 1) =  0 AND
+  mod(-3, 1) =  0 AND
+  mod(-3, 2) = -1 AND
+  mod(-3, 3) =  0 AND
+  mod(-3, 4) = -3 AND
+  mod(-3, 5) = -3 AND
+
+  ln(0.5) BETWEEN -0.69315 AND -0.69314 AND
+  ln(1.0) = 0                           AND
+  ln(1.5) BETWEEN  0.40546 AND  0.40547 AND
+
+  exp(-1) BETWEEN 0.36787 AND 0.36788 AND
+  exp( 0) = 1                         AND
+  exp( 1) BETWEEN 2.71828 AND 2.71829 AND
+
+  power( 0, 0) =  1 AND
+  power(10, 0) =  1 AND
+  power( 3, 1) =  3 AND
+  power( 3, 2) =  9 AND
+  power( 3, 3) = 27 AND
+
+  sqrt(       2) BETWEEN    1.41421 AND    1.41422 AND
+  sqrt(       4) = 2                               AND
+  sqrt(       9) = 3                               AND
+  sqrt(      16) = 4                               AND
+  sqrt( 1000000) = 1000                            AND
+  sqrt(10000000) BETWEEN 3162.27766 AND 3162.27767 AND
+
+  floor(1.2) = 1 AND
+  floor(1.8) = 1 AND
+
+     ceil(1.2) = 2 AND
+     ceil(1.8) = 2 AND
+  ceiling(1.2) = 2 AND
+  ceiling(1.8) = 2 AND
+
+  log(2, 1) = 0                         AND
+  log(2, 2) = 1                         AND
+  log(3, 2) BETWEEN 0.63092 AND 0.63093 AND
+
+  sin(-1.0 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+  sin(-0.5 * acos(-1)) BETWEEN -1.000001 AND -0.999999 AND
+  sin( 0             ) BETWEEN -0.000001 AND  0.000001 AND
+  sin(+0.5 * acos(-1)) BETWEEN  0.999999 AND  1.000001 AND
+  sin(+1.0 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+
+  cos(-1.0 * acos(-1)) BETWEEN -1.000001 AND -0.999999 AND
+  cos(-0.5 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+  cos( 0             ) BETWEEN  0.999999 AND  1.000001 AND
+  cos(+0.5 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+  cos(+1.0 * acos(-1)) BETWEEN -1.000001 AND -0.999999 AND
+
+  tan(-1.0 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+  tan( 0             ) BETWEEN -0.000001 AND  0.000001 AND
+  tan(+1.0 * acos(-1)) BETWEEN -0.000001 AND  0.000001 AND
+
+  asin(-1.0) BETWEEN -1.570797 AND -1.570796 AND
+  asin(-0.5) BETWEEN -0.523599 AND -0.523598 AND
+  asin( 0.0) BETWEEN -0.000001 AND  0.000001 AND
+  asin(+0.5) BETWEEN  0.523598 AND  0.523599 AND
+  asin(+1.0) BETWEEN  1.570796 AND  1.570797 AND
+
+  acos(-1.0) BETWEEN  3.141592 AND  3.141593 AND
+  acos(-0.5) BETWEEN  2.094395 AND  2.094396 AND
+  acos( 0.0) BETWEEN  1.570796 AND  1.570797 AND
+  acos(+0.5) BETWEEN  1.047197 AND  1.047198 AND
+  acos(+1.0) BETWEEN -0.000001 AND  0.000001 AND
+
+  atan(-1.0) BETWEEN -0.785399 AND -0.785398 AND
+  atan(-0.5) BETWEEN -0.463648 AND -0.463647 AND
+  atan( 0.0) BETWEEN -0.000001 AND  0.000001 AND
+  atan(+0.5) BETWEEN  0.463647 AND  0.463648 AND
+  atan(+1.0) BETWEEN  0.785398 AND  0.785399
+) THEN 'T' ELSE 'F' END
+FROM (VALUES (1)) something(x)
+) testcase(result) UNION ALL select 15 as test, result from (
 -- tests/convention/test001.sql
 -- check that the engine handles existential queries in disjunctions
 
@@ -332,12 +419,12 @@ from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
-) testcase(result) UNION ALL select 15 as test, result from (
+) testcase(result) UNION ALL select 16 as test, result from (
 -- tests/convention/test002.sql
 -- test that casting to integer rounds and does not truncate
 
 SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 16 as test, result from (
+) testcase(result) UNION ALL select 17 as test, result from (
 -- tests/convention/test003.sql
 -- check that that quantified expressions return NULL values as needed
 
@@ -353,12 +440,12 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
 ) test
-) testcase(result) UNION ALL select 17 as test, result from (
+) testcase(result) UNION ALL select 18 as test, result from (
 -- tests/convention/test004.sql
 -- a string may be empty but that doesn't make it NULL
 
 SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 18 as test, result from (
+) testcase(result) UNION ALL select 19 as test, result from (
 -- tests/convention/test005.sql
 -- check that full outer joins are decorrelated correctly
 
@@ -375,7 +462,7 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
 ) test
-) testcase(result) UNION ALL select 19 as test, result from (
+) testcase(result) UNION ALL select 20 as test, result from (
 -- tests/convention/test006.sql
 -- check that decimal number behave sane
 
@@ -389,7 +476,7 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
 ) test
-) testcase(result) UNION ALL select 20 as test, result from (
+) testcase(result) UNION ALL select 21 as test, result from (
 -- tests/convention/test007.sql
 -- check that multi set operations are supported
 
@@ -407,7 +494,7 @@ group by x
 
 ) s on (x=a and c=b)
 ) test
-) testcase(result) UNION ALL select 21 as test, result from (
+) testcase(result) UNION ALL select 22 as test, result from (
 -- tests/convention/test009.sql
 -- check aggregate behavior
 -- result header
@@ -442,14 +529,14 @@ SELECT
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
 ) test
-) testcase(result) UNION ALL select 22 as test, result from (
+) testcase(result) UNION ALL select 23 as test, result from (
 -- tests/convention/test010.sql
 -- check for the space-padding semantics of type char(n)
 
 SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
        CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 23 as test, result from (
+) testcase(result) UNION ALL select 24 as test, result from (
 -- tests/convention/test011.sql
 SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
@@ -457,12 +544,12 @@ FROM (
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
-) testcase(result) UNION ALL select 24 as test, result from (
+) testcase(result) UNION ALL select 25 as test, result from (
 -- tests/convention/test012.sql
 -- check that aggregations are correctly extracted from a subquery
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 25 as test, result from (
+) testcase(result) UNION ALL select 26 as test, result from (
 -- tests/convention/test013.sql
 -- check that recursive queries work
 
@@ -490,14 +577,14 @@ with recursive
 select state from sudoku where next=0
 
 ) test
-) testcase(result) UNION ALL select 26 as test, result from (
+) testcase(result) UNION ALL select 27 as test, result from (
 -- tests/convention/test026.sql
 -- Should be standard compliant, but I cannot find the section in the
 -- standard that says so explicitly.
 select case when (true
   and (select a as b from (values (1)) t(a) order by b) = 1
 ) then 'T' else 'F' end from (values (1)) AS t
-) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(27,260) s(index) 
+) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(28,260) s(index) 
 )
 -- render the result
 select case when state = 1048575 then image else 'XXXXXXXXXXXXXXXXXXXX' end as output from (values
