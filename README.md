@@ -27,6 +27,9 @@ Tests are written in standard SQL and compiled into a single query. If the tests
  ```
 
 ## Systems known to be compliant
+
+* [Compatibility Matrix](https://docs.google.com/spreadsheets/d/1uDqQeXAWH8N9U6YeY5GpRgDsZugFUrMuz5EpXUutsVs/edit?usp=sharing)
+
 * [PostgreSQL](https://www.postgresql.org)
 * [Umbra](https://umbra-db.com)
 
