@@ -2,7 +2,148 @@
 with testresults as (
   
 select 1 as test, result from (
--- tests/compliance/022-like.sql
+-- tests/compliance/test008.sql
+
+
+
+
+
+select case when s = 'abcdef' then 'T' else 'F' end as result
+from (
+
+
+values ('abc' || 'def')
+
+) t(s)
+) testcase(result) UNION ALL select 2 as test, result from (
+-- tests/compliance/test016.sql
+
+
+
+SELECT
+  CASE WHEN
+        CAST(NULL AS CHARACTER) IS NULL
+    AND CAST(NULL AS NUMERIC) IS NULL
+    AND CAST(NULL AS DECIMAL) IS NULL
+    AND CAST(NULL AS SMALLINT) IS NULL
+    AND CAST(NULL AS INTEGER) IS NULL
+    AND CAST(NULL AS INT) IS NULL
+    AND CAST(NULL AS BIGINT) IS NULL
+    AND CAST(NULL AS FLOAT) IS NULL
+    AND CAST(NULL AS REAL) IS NULL
+    AND CAST(NULL AS DOUBLE PRECISION) IS NULL
+    AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
+  THEN 'T' ELSE 'F' END AS result
+) testcase(result) UNION ALL select 3 as test, result from (
+-- tests/compliance/test018.sql
+
+
+
+
+select case when (
+       0    BETWEEN -1    AND  1    AND
+       0.99 BETWEEN  0    AND  1    AND
+
+       0    BETWEEN  0    AND  0    AND
+       1    BETWEEN  0    AND  1    AND
+       0    BETWEEN  0    AND  1    AND
+
+      -0    BETWEEN -0    AND +0    AND
+      -0.00 BETWEEN -0.00 AND +0.00 AND
+
+       1.00 BETWEEN  0    AND  1.00 AND
+  NOT  1.01 BETWEEN  0    AND  1    AND
+
+      'a'   BETWEEN 'a'   AND 'b'   AND
+      'ab'  BETWEEN 'a'   AND 'b'   AND
+      'b'   BETWEEN 'a'   AND 'b'   AND
+  NOT 'bla' BETWEEN 'a'   AND 'b'   AND
+
+  (NULL BETWEEN NULL AND NULL) IS NULL AND
+  (NULL BETWEEN 0    AND NULL) IS NULL AND
+  (0    BETWEEN 0    AND NULL) IS NULL AND
+  (NULL BETWEEN 0    AND 1   ) IS NULL AND
+
+  TRUE  BETWEEN FALSE AND TRUE AND
+  FALSE BETWEEN FALSE AND TRUE
+
+) then 'T' else 'F' end as result from (values (1)) as t
+) testcase(result) UNION ALL select 4 as test, result from (
+-- tests/compliance/test019.sql
+
+
+
+
+
+
+
+
+SELECT CASE WHEN (
+  CAST('+0'      AS NUMERIC(10,3)) = CAST(+0      AS NUMERIC(10,3)) AND
+  CAST('-0'      AS NUMERIC(10,3)) = CAST(-0      AS NUMERIC(10,3)) AND
+
+  CAST(' 1'      AS NUMERIC(10,3)) = CAST( 1      AS NUMERIC(10,3)) AND
+  CAST(' 1.'     AS NUMERIC(10,3)) = CAST( 1.     AS NUMERIC(10,3)) AND
+  CAST(' 1.2'    AS NUMERIC(10,3)) = CAST( 1.2    AS NUMERIC(10,3)) AND
+  CAST('  .2'    AS NUMERIC(10,3)) = CAST(  .2    AS NUMERIC(10,3)) AND
+
+  CAST('+1'      AS NUMERIC(10,3)) = CAST(+1      AS NUMERIC(10,3)) AND
+  CAST('+1.'     AS NUMERIC(10,3)) = CAST(+1.     AS NUMERIC(10,3)) AND
+  CAST('+1.2'    AS NUMERIC(10,3)) = CAST(+1.2    AS NUMERIC(10,3)) AND
+  CAST('+.2'     AS NUMERIC(10,3)) = CAST( +.2    AS NUMERIC(10,3)) AND
+
+  CAST('-1'      AS NUMERIC(10,3)) = CAST(-1      AS NUMERIC(10,3)) AND
+  CAST('-1.'     AS NUMERIC(10,3)) = CAST(-1.     AS NUMERIC(10,3)) AND
+  CAST('-1.2'    AS NUMERIC(10,3)) = CAST(-1.2    AS NUMERIC(10,3)) AND
+  CAST('-.2'     AS NUMERIC(10,3)) = CAST( -.2    AS NUMERIC(10,3)) AND
+
+  CAST(' 1.2E3'  AS NUMERIC(10,3)) = CAST( 1.2E3  AS NUMERIC(10,3)) AND
+  CAST('+1.2E3'  AS NUMERIC(10,3)) = CAST(+1.2E3  AS NUMERIC(10,3)) AND
+  CAST('-1.2E3'  AS NUMERIC(10,3)) = CAST(-1.2E3  AS NUMERIC(10,3)) AND
+
+  CAST(' 1.2E+3' AS NUMERIC(10,3)) = CAST( 1.2E+3 AS NUMERIC(10,3)) AND
+  CAST('+1.2E+3' AS NUMERIC(10,3)) = CAST(+1.2E+3 AS NUMERIC(10,3)) AND
+  CAST('-1.2E+3' AS NUMERIC(10,3)) = CAST(-1.2E+3 AS NUMERIC(10,3)) AND
+
+  CAST(' 1.2E-3' AS NUMERIC(10,3)) = CAST( 1.2E-3 AS NUMERIC(10,3)) AND
+  CAST('+1.2E-3' AS NUMERIC(10,3)) = CAST(+1.2E-3 AS NUMERIC(10,3)) AND
+  CAST('-1.2E-3' AS NUMERIC(10,3)) = CAST(-1.2E-3 AS NUMERIC(10,3))
+) THEN 'T' ELSE 'F' END
+FROM (VALUES (1)) something(x)
+) testcase(result) UNION ALL select 5 as test, result from (
+-- tests/compliance/test020.sql
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
+FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
+) testcase(result) UNION ALL select 6 as test, result from (
+-- tests/compliance/test021.sql
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
+FROM (VALUES ('''')) AS t(x)
+) testcase(result) UNION ALL select 7 as test, result from (
+-- tests/compliance/test022.sql
 
 
 SELECT CASE WHEN (1=1
@@ -57,147 +198,6 @@ SELECT CASE WHEN (1=1
                   
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) t(x)
-) testcase(result) UNION ALL select 2 as test, result from (
--- tests/compliance/test008.sql
-
-
-
-
-
-select case when s = 'abcdef' then 'T' else 'F' end as result
-from (
-
-
-values ('abc' || 'def')
-
-) t(s)
-) testcase(result) UNION ALL select 3 as test, result from (
--- tests/compliance/test016.sql
-
-
-
-SELECT
-  CASE WHEN
-        CAST(NULL AS CHARACTER) IS NULL
-    AND CAST(NULL AS NUMERIC) IS NULL
-    AND CAST(NULL AS DECIMAL) IS NULL
-    AND CAST(NULL AS SMALLINT) IS NULL
-    AND CAST(NULL AS INTEGER) IS NULL
-    AND CAST(NULL AS INT) IS NULL
-    AND CAST(NULL AS BIGINT) IS NULL
-    AND CAST(NULL AS FLOAT) IS NULL
-    AND CAST(NULL AS REAL) IS NULL
-    AND CAST(NULL AS DOUBLE PRECISION) IS NULL
-    AND CAST('T' AS BOOLEAN) <> CAST('F' AS BOOLEAN)
-  THEN 'T' ELSE 'F' END AS result
-) testcase(result) UNION ALL select 4 as test, result from (
--- tests/compliance/test018.sql
-
-
-
-
-select case when (
-       0    BETWEEN -1    AND  1    AND
-       0.99 BETWEEN  0    AND  1    AND
-
-       0    BETWEEN  0    AND  0    AND
-       1    BETWEEN  0    AND  1    AND
-       0    BETWEEN  0    AND  1    AND
-
-      -0    BETWEEN -0    AND +0    AND
-      -0.00 BETWEEN -0.00 AND +0.00 AND
-
-       1.00 BETWEEN  0    AND  1.00 AND
-  NOT  1.01 BETWEEN  0    AND  1    AND
-
-      'a'   BETWEEN 'a'   AND 'b'   AND
-      'ab'  BETWEEN 'a'   AND 'b'   AND
-      'b'   BETWEEN 'a'   AND 'b'   AND
-  NOT 'bla' BETWEEN 'a'   AND 'b'   AND
-
-  (NULL BETWEEN NULL AND NULL) IS NULL AND
-  (NULL BETWEEN 0    AND NULL) IS NULL AND
-  (0    BETWEEN 0    AND NULL) IS NULL AND
-  (NULL BETWEEN 0    AND 1   ) IS NULL AND
-
-  TRUE  BETWEEN FALSE AND TRUE AND
-  FALSE BETWEEN FALSE AND TRUE
-
-) then 'T' else 'F' end as result from (values (1)) as t
-) testcase(result) UNION ALL select 5 as test, result from (
--- tests/compliance/test019.sql
-
-
-
-
-
-
-
-
-SELECT CASE WHEN (
-  CAST('+0'      AS NUMERIC(10,3)) = CAST(+0      AS NUMERIC(10,3)) AND
-  CAST('-0'      AS NUMERIC(10,3)) = CAST(-0      AS NUMERIC(10,3)) AND
-
-  CAST(' 1'      AS NUMERIC(10,3)) = CAST( 1      AS NUMERIC(10,3)) AND
-  CAST(' 1.'     AS NUMERIC(10,3)) = CAST( 1.     AS NUMERIC(10,3)) AND
-  CAST(' 1.2'    AS NUMERIC(10,3)) = CAST( 1.2    AS NUMERIC(10,3)) AND
-  CAST('  .2'    AS NUMERIC(10,3)) = CAST(  .2    AS NUMERIC(10,3)) AND
-
-  CAST('+1'      AS NUMERIC(10,3)) = CAST(+1      AS NUMERIC(10,3)) AND
-  CAST('+1.'     AS NUMERIC(10,3)) = CAST(+1.     AS NUMERIC(10,3)) AND
-  CAST('+1.2'    AS NUMERIC(10,3)) = CAST(+1.2    AS NUMERIC(10,3)) AND
-  CAST('+.2'     AS NUMERIC(10,3)) = CAST( +.2    AS NUMERIC(10,3)) AND
-
-  CAST('-1'      AS NUMERIC(10,3)) = CAST(-1      AS NUMERIC(10,3)) AND
-  CAST('-1.'     AS NUMERIC(10,3)) = CAST(-1.     AS NUMERIC(10,3)) AND
-  CAST('-1.2'    AS NUMERIC(10,3)) = CAST(-1.2    AS NUMERIC(10,3)) AND
-  CAST('-.2'     AS NUMERIC(10,3)) = CAST( -.2    AS NUMERIC(10,3)) AND
-
-  CAST(' 1.2E3'  AS NUMERIC(10,3)) = CAST( 1.2E3  AS NUMERIC(10,3)) AND
-  CAST('+1.2E3'  AS NUMERIC(10,3)) = CAST(+1.2E3  AS NUMERIC(10,3)) AND
-  CAST('-1.2E3'  AS NUMERIC(10,3)) = CAST(-1.2E3  AS NUMERIC(10,3)) AND
-
-  CAST(' 1.2E+3' AS NUMERIC(10,3)) = CAST( 1.2E+3 AS NUMERIC(10,3)) AND
-  CAST('+1.2E+3' AS NUMERIC(10,3)) = CAST(+1.2E+3 AS NUMERIC(10,3)) AND
-  CAST('-1.2E+3' AS NUMERIC(10,3)) = CAST(-1.2E+3 AS NUMERIC(10,3)) AND
-
-  CAST(' 1.2E-3' AS NUMERIC(10,3)) = CAST( 1.2E-3 AS NUMERIC(10,3)) AND
-  CAST('+1.2E-3' AS NUMERIC(10,3)) = CAST(+1.2E-3 AS NUMERIC(10,3)) AND
-  CAST('-1.2E-3' AS NUMERIC(10,3)) = CAST(-1.2E-3 AS NUMERIC(10,3))
-) THEN 'T' ELSE 'F' END
-FROM (VALUES (1)) something(x)
-) testcase(result) UNION ALL select 6 as test, result from (
--- tests/compliance/test020.sql
-
-
-
-
-
-
-
-
-
-
-
-
-SELECT CASE WHEN "this is an ""escaped"" identifier"."""escaped"""=1 THEN 'T' ELSE 'F' END AS result
-FROM (VALUES (1)) AS "this is an ""escaped"" identifier"("""escaped""")
-) testcase(result) UNION ALL select 7 as test, result from (
--- tests/compliance/test021.sql
-
-
-
-
-
-
-
-
-
-
-
-
-SELECT CASE WHEN LENGTH(x)=1 THEN 'T' ELSE 'F' END AS result
-FROM (VALUES ('''')) AS t(x)
 ) testcase(result) UNION ALL select 8 as test, result from (
 -- tests/compliance/test023.sql
 
