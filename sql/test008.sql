@@ -5,6 +5,6 @@ select case when s = 'abcdef' then 'T' else 'F' end as result
 from (
 
 -- the query itself
-select 'abc' || 'def'
+values ('abc' || 'def')
 
-) _(s)
+) t(s)
