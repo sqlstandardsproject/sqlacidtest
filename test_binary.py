@@ -26,6 +26,13 @@ parser.add_argument(
     help='The extra arguments to pass to the binary',
     default=''
 )
+parser.add_argument(
+    '--test',
+    dest='test',
+    action='store',
+    help='Specifies which test to run (default: all)',
+    default=''
+)
 args = parser.parse_args()
 
 
@@ -44,12 +51,19 @@ def run_test(file_name):
         result = 'Success'
     elif 'F' in stdout:
         result = 'Fail'
+    else:
+        print(file_name)
+        print(stdout)
+        print(stderr)
+        raise Exception('Found neither T nor F in result')
     print(file_name + '   -   ' + result)
 
 file_list = os.listdir(test_dir)
 file_list = sorted(file_list)
 for f in file_list:
     if f in skip_tests:
+        continue
+    if len(args.test) > 0 and args.test not in f:
         continue
     test_name = os.path.join(test_dir, f)
     run_test(test_name)
