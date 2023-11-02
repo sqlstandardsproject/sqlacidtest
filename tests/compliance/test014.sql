@@ -1,4 +1,5 @@
 -- check that precedence matches the standard precedence order
+-- associativity rules for arithmetic is defined in 6.27
 select case when (
 	-- * has higher precedence than binary +
 	(1+2*3) = (1+(2*3)) and
