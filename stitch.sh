@@ -66,7 +66,7 @@ echo "$RENDER_TEMPLATE_HEAD"
 
 for (( i=0; i < N_TESTS; i++ )); do
   TEST_FILE="${TEST_FILES[$i]}"
-  printf 'select %d as test, result from (\n-- %s\n%s\n) testcase(result) UNION ALL ' "$((1+i))" "$TEST_FILE" "$(uglify "$TEST_FILE")"
+  printf 'select %d as test, result from (\n-- %s\n%s\n) testcase(result) UNION ALL ' "$((1+i))" "$TEST_FILE" "$(< "$TEST_FILE")"
 done
 
 printf "select index as test, 'T' as result from generate_series($((N_TESTS+1)),260) s(index) "
