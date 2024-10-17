@@ -43,6 +43,7 @@ python3 test_binary.py --program duckdb
 
 * [PostgreSQL](https://www.postgresql.org)
 * [Umbra](https://umbra-db.com)
+* [Hyper](https://tableau.github.io/hyper-db/)
 
 ## Contribute
 We welcome contributions with additional test cases. To add a test case, add a `.sql` file in the `tests` directory and run the `stitch.sh` script.
