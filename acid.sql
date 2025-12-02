@@ -78,8 +78,8 @@ FROM (VALUES (42)) AS t
 SELECT
   CASE WHEN
         CAST(NULL AS CHARACTER) IS NULL
-    AND CAST(NULL AS NUMERIC) IS NULL
-    AND CAST(NULL AS DECIMAL) IS NULL
+    AND CAST(NULL AS NUMERIC(10,2)) IS NULL
+    AND CAST(NULL AS DECIMAL(10,2)) IS NULL
     AND CAST(NULL AS SMALLINT) IS NULL
     AND CAST(NULL AS INTEGER) IS NULL
     AND CAST(NULL AS INT) IS NULL
@@ -404,6 +404,66 @@ SELECT CASE WHEN (
 ) THEN 'T' ELSE 'F' END
 FROM (VALUES (1)) something(x)
 ) testcase(result) UNION ALL select 15 as test, result from (
+-- tests/compliance/test028.sql
+with
+-- Single IN attribute
+test0  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S)),
+test1  as (select coalesce(sum(k), 0) - 1 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S)),
+test2  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, null as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S)),
+test3  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, null as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S)),
+test4  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4 union all select null) S)),
+test5  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4 union all select null) S)),
+test6  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S where a < 2)),
+test7  as (select coalesce(sum(k), 0) - 7 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S where a < 2)),
+-- Correlated single IN attribute
+test8  as (select coalesce(sum(k), 0) - 1   as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x in     (select a from (select 1 as a, 1 as b union all select 2, 2) S where y = b)),
+test9  as (select coalesce(sum(k), 0) - 244 as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x not in (select a from (select 1 as a, 1 as b union all select 2, 2) S where y = b)),
+test10 as (select coalesce(sum(k), 0) - 1   as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x in     (select a from (select 1 as a, 1 as b union all select null, 1 union all select null, 2 union all select null, null) S where y = b)),
+test11 as (select coalesce(sum(k), 0) - 240 as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x not in (select a from (select 1 as a, 1 as b union all select null, 1 union all select null, 2 union all select null, null) S where y = b))
+select case when (0
+    + case when (select r from test0)  = 0 then 0 else 1    end
+    + case when (select r from test1)  = 0 then 0 else 2    end
+    + case when (select r from test2)  = 0 then 0 else 4    end
+    + case when (select r from test3)  = 0 then 0 else 8    end
+    + case when (select r from test4)  = 0 then 0 else 16   end
+    + case when (select r from test5)  = 0 then 0 else 32   end
+    + case when (select r from test6)  = 0 then 0 else 64   end
+    + case when (select r from test7)  = 0 then 0 else 128  end
+    + case when (select r from test8)  = 0 then 0 else 256  end
+    + case when (select r from test9)  = 0 then 0 else 512  end
+    + case when (select r from test10) = 0 then 0 else 1024 end
+    + case when (select r from test11) = 0 then 0 else 2048 end) = 0 then 'T' else 'F' end
+from (values (1)) dumm(x)
+;
+) testcase(result) UNION ALL select 16 as test, result from (
+-- tests/compliance/test029.sql
+with
+-- Multiple IN attributes
+test0 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 4, 8) S)),
+test1 as (select coalesce(sum(k), 0) - 13 as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 4, 8) S)),
+test2 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8 union all select 64, null, null) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 3, null union all select 4, 8) S)),
+test3 as (select coalesce(sum(k), 0) - 9  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8 union all select 64, null, null) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 3, null union all select 4, 8) S)),
+test4 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 7 union all select 8, 4, 8) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select null, 7 union all select 4, null union all select null, null) S)),
+test5 as (select coalesce(sum(k), 0) - 0  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 7 union all select 8, 4, 8) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select null, 7 union all select 4, null union all select null, null) S)),
+test6 as (select coalesce(sum(k), 0) - 1  as r from (select 1 as k, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 0, 0, 0, 0, 0, 0 union all select 4, 1, 0, 0, 0, 0, 0 union all select 8, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) in     (select a0, a1, a2, a3, a4, a5 from (select 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 0, null, null, 0, null, 0) S)),
+test7 as (select coalesce(sum(k), 0) - 4  as r from (select 1 as k, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 0, 0, 0, 0, 0, 0 union all select 4, 1, 0, 0, 0, 0, 0 union all select 8, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) not in (select a0, a1, a2, a3, a4, a5 from (select 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 0, null, null, 0, null, 0) S)),
+-- Correlated multiple IN attributes
+test8 as (select coalesce(sum(k), 0) - 1  as r from (select 1 as k, 2 as rc, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 2, null, null, null, null, null, null union all select 4, 3, 1, 0, 0, 0, 0, 0 union all select 8, 2, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) in     (select a0, a1, a2, a3, a4, a5 from (select 2 as sc, 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 3, 0, null, null, 0, null, 0) S where rc = sc)),
+test9 as (select coalesce(sum(k), 0) - 12 as r from (select 1 as k, 2 as rc, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 2, null, null, null, null, null, null union all select 4, 3, 1, 0, 0, 0, 0, 0 union all select 8, 2, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) not in (select a0, a1, a2, a3, a4, a5 from (select 2 as sc, 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 3, 0, null, null, 0, null, 0) S where rc = sc))
+select case when (0
+    + case when (select r from test0) = 0 then 0 else 1   end
+    + case when (select r from test1) = 0 then 0 else 2   end
+    + case when (select r from test2) = 0 then 0 else 4   end
+    + case when (select r from test3) = 0 then 0 else 8   end
+    + case when (select r from test4) = 0 then 0 else 16  end
+    + case when (select r from test5) = 0 then 0 else 32  end
+    + case when (select r from test6) = 0 then 0 else 64  end
+    + case when (select r from test7) = 0 then 0 else 128 end
+    + case when (select r from test8) = 0 then 0 else 256 end
+    + case when (select r from test9) = 0 then 0 else 512 end) = 0 then 'T' else 'F' end
+from (values (1)) dumm(x)
+;
+) testcase(result) UNION ALL select 17 as test, result from (
 -- tests/convention/test001.sql
 -- check that the engine handles existential queries in disjunctions
 
@@ -417,12 +477,12 @@ from (values(1),(2),(4),(8),(NULL)) s(x)
 where exists(select * from (values(2),(8)) t(y) where x=y) or (x<3)
 
 ) test
-) testcase(result) UNION ALL select 16 as test, result from (
+) testcase(result) UNION ALL select 18 as test, result from (
 -- tests/convention/test002.sql
 -- test that casting to integer rounds and does not truncate
 
 SELECT case when CAST (4.8 AS INTEGER) = 5 AND CAST(4.2 AS INTEGER) = 4 then 'T' else 'F' end as result
-) testcase(result) UNION ALL select 17 as test, result from (
+) testcase(result) UNION ALL select 19 as test, result from (
 -- tests/convention/test003.sql
 -- check that that quantified expressions return NULL values as needed
 
@@ -438,12 +498,12 @@ from (values(1,4,1),(2,2,2),(4,6,4),(8,8,8),(NULL,0,16),(NULL,8,32)) s(x,y,i)
 ) s
 
 ) test
-) testcase(result) UNION ALL select 18 as test, result from (
+) testcase(result) UNION ALL select 20 as test, result from (
 -- tests/convention/test004.sql
 -- a string may be empty but that doesn't make it NULL
 
 SELECT case when '' IS NOT NULL then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 19 as test, result from (
+) testcase(result) UNION ALL select 21 as test, result from (
 -- tests/convention/test005.sql
 -- check that full outer joins are decorrelated correctly
 
@@ -460,7 +520,7 @@ select * from (values(1),(2),(3)) s(x), lateral (select * from (select * from (v
 
 ) t on a is not distinct from x and b is not distinct from y and c is not distinct from z
 ) test
-) testcase(result) UNION ALL select 20 as test, result from (
+) testcase(result) UNION ALL select 22 as test, result from (
 -- tests/convention/test006.sql
 -- check that decimal number behave sane
 
@@ -474,7 +534,7 @@ select sum(x)/10 as s from (values(0.2),(0.2),(-0.3)) s(x)
 
 
 ) test
-) testcase(result) UNION ALL select 21 as test, result from (
+) testcase(result) UNION ALL select 23 as test, result from (
 -- tests/convention/test007.sql
 -- check that multi set operations are supported
 
@@ -492,7 +552,7 @@ group by x
 
 ) s on (x=a and c=b)
 ) test
-) testcase(result) UNION ALL select 22 as test, result from (
+) testcase(result) UNION ALL select 24 as test, result from (
 -- tests/convention/test009.sql
 -- check aggregate behavior
 -- result header
@@ -527,14 +587,14 @@ SELECT
 FROM (VALUES(CAST(30001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (CAST(20001 AS SMALLINT)), (NULL)) s(x)
 
 ) test
-) testcase(result) UNION ALL select 23 as test, result from (
+) testcase(result) UNION ALL select 25 as test, result from (
 -- tests/convention/test010.sql
 -- check for the space-padding semantics of type char(n)
 
 SELECT case when CAST('123' AS char(4)) =  CAST('123 ' AS char(4))
          AND
        CAST('123' AS varchar(10))    <> CAST('123 ' AS varchar(10)) then 'T' else 'F' end AS result
-) testcase(result) UNION ALL select 24 as test, result from (
+) testcase(result) UNION ALL select 26 as test, result from (
 -- tests/convention/test011.sql
 SELECT case when AVG(x)>0 then 'T' else 'F' end AS result
 FROM (
@@ -542,12 +602,12 @@ FROM (
 	UNION ALL
 	SELECT CAST(9223372036854775807 AS BIGINT)
 ) AS t
-) testcase(result) UNION ALL select 25 as test, result from (
+) testcase(result) UNION ALL select 27 as test, result from (
 -- tests/convention/test012.sql
 -- check that aggregations are correctly extracted from a subquery
 SELECT case when (SELECT SUM(x))=42 then 'T' else 'F' end AS result
 FROM (VALUES (42)) AS t(x)
-) testcase(result) UNION ALL select 26 as test, result from (
+) testcase(result) UNION ALL select 28 as test, result from (
 -- tests/convention/test013.sql
 -- check that recursive queries work
 
@@ -575,7 +635,7 @@ with recursive
 select state from sudoku where next=0
 
 ) test
-) testcase(result) UNION ALL select 27 as test, result from (
+) testcase(result) UNION ALL select 29 as test, result from (
 -- tests/convention/test026.sql
 -- Test that an alias from the select clause can be used in the order by clause
 -- Should be standard compliant (CD 9075-2:201?(E) 7.16 <query expression>), 
@@ -583,62 +643,6 @@ select state from sudoku where next=0
 select case when (true
   and (select a as b from (values (1)) t(a) order by b) = 1
 ) then 'T' else 'F' end from (values (1)) AS t
-) testcase(result) UNION ALL select 28 as test, result from (
-with
--- Single IN attribute
-test0  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S)),
-test1  as (select coalesce(sum(k), 0) - 1 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S)),
-test2  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, null as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S)),
-test3  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, null as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S)),
-test4  as (select coalesce(sum(k), 0) - 6 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4 union all select null) S)),
-test5  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4 union all select null) S)),
-test6  as (select coalesce(sum(k), 0) - 0 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x in     (select a from (select 2 as a union all select 3 union all select 4) S where a < 2)),
-test7  as (select coalesce(sum(k), 0) - 7 as r from (select 1 as k, 1 as x union all select 2, 2 union all select 4, 3) R where x not in (select a from (select 2 as a union all select 3 union all select 4) S where a < 2)),
--- Correlated single IN attribute
-test8  as (select coalesce(sum(k), 0) - 1   as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x in     (select a from (select 1 as a, 1 as b union all select 2, 2) S where y = b)),
-test9  as (select coalesce(sum(k), 0) - 244 as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x not in (select a from (select 1 as a, 1 as b union all select 2, 2) S where y = b)),
-test10 as (select coalesce(sum(k), 0) - 1   as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x in     (select a from (select 1 as a, 1 as b union all select null, 1 union all select null, 2 union all select null, null) S where y = b)),
-test11 as (select coalesce(sum(k), 0) - 240 as r from (select 1 as k, 1 as x, 1 as y union all select 2, null, 1 union all select 4, 1, 2 union all select 8, null, 2 union all select 16, 1, 3 union all select 32, null, 3 union all select 64, 1, null union all select 128, null, null) R where x not in (select a from (select 1 as a, 1 as b union all select null, 1 union all select null, 2 union all select null, null) S where y = b))
-select case when (0
-    + case when (select r from test0)  = 0 then 0 else 1    end
-    + case when (select r from test1)  = 0 then 0 else 2    end
-    + case when (select r from test2)  = 0 then 0 else 4    end
-    + case when (select r from test3)  = 0 then 0 else 8    end
-    + case when (select r from test4)  = 0 then 0 else 16   end
-    + case when (select r from test5)  = 0 then 0 else 32   end
-    + case when (select r from test6)  = 0 then 0 else 64   end
-    + case when (select r from test7)  = 0 then 0 else 128  end
-    + case when (select r from test8)  = 0 then 0 else 256  end
-    + case when (select r from test9)  = 0 then 0 else 512  end
-    + case when (select r from test10) = 0 then 0 else 1024 end
-    + case when (select r from test11) = 0 then 0 else 2048 end) = 0 then 'T' else 'F' end
-from (values (1)) dumm(x)
-) testcase(result) UNION ALL select 29 as test, result from (
-with
--- Multiple IN attributes
-test0 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 4, 8) S)),
-test1 as (select coalesce(sum(k), 0) - 13 as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 4, 8) S)),
-test2 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8 union all select 64, null, null) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 3, null union all select 4, 8) S)),
-test3 as (select coalesce(sum(k), 0) - 9  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 9 union all select 8, 9, 8 union all select 16, 3, null union all select 32, null, 8 union all select 64, null, null) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select 3, 7 union all select 3, null union all select 4, 8) S)),
-test4 as (select coalesce(sum(k), 0) - 2  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 7 union all select 8, 4, 8) R where (x, y) in     (select a, b from (select 2 as a, 6 as b union all select null, 7 union all select 4, null union all select null, null) S)),
-test5 as (select coalesce(sum(k), 0) - 0  as r from (select 1 as k, 1 as x, 5 as y union all select 2, 2, 6 union all select 4, 3, 7 union all select 8, 4, 8) R where (x, y) not in (select a, b from (select 2 as a, 6 as b union all select null, 7 union all select 4, null union all select null, null) S)),
-test6 as (select coalesce(sum(k), 0) - 1  as r from (select 1 as k, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 0, 0, 0, 0, 0, 0 union all select 4, 1, 0, 0, 0, 0, 0 union all select 8, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) in     (select a0, a1, a2, a3, a4, a5 from (select 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 0, null, null, 0, null, 0) S)),
-test7 as (select coalesce(sum(k), 0) - 4  as r from (select 1 as k, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 0, 0, 0, 0, 0, 0 union all select 4, 1, 0, 0, 0, 0, 0 union all select 8, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) not in (select a0, a1, a2, a3, a4, a5 from (select 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 0, null, null, 0, null, 0) S)),
--- Correlated multiple IN attributes
-test8 as (select coalesce(sum(k), 0) - 1  as r from (select 1 as k, 2 as rc, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 2, null, null, null, null, null, null union all select 4, 3, 1, 0, 0, 0, 0, 0 union all select 8, 2, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) in     (select a0, a1, a2, a3, a4, a5 from (select 2 as sc, 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 3, 0, null, null, 0, null, 0) S where rc = sc)),
-test9 as (select coalesce(sum(k), 0) - 12 as r from (select 1 as k, 2 as rc, 1 as x0, 1 as x1, 1 as x2, 1 as x3, 1 as x4, 1 as x5 union all select 2, 2, null, null, null, null, null, null union all select 4, 3, 1, 0, 0, 0, 0, 0 union all select 8, 2, 0, 1, 1, 0, 1, 0) R where (x0, x1, x2, x3, x4, x5) not in (select a0, a1, a2, a3, a4, a5 from (select 2 as sc, 1 as a0, 1 as a1, 1 as a2, 1 as a3, 1 as a4, 1 as a5 union all select 3, 0, null, null, 0, null, 0) S where rc = sc))
-select case when (0
-    + case when (select r from test0) = 0 then 0 else 1   end
-    + case when (select r from test1) = 0 then 0 else 2   end
-    + case when (select r from test2) = 0 then 0 else 4   end
-    + case when (select r from test3) = 0 then 0 else 8   end
-    + case when (select r from test4) = 0 then 0 else 16  end
-    + case when (select r from test5) = 0 then 0 else 32  end
-    + case when (select r from test6) = 0 then 0 else 64  end
-    + case when (select r from test7) = 0 then 0 else 128 end
-    + case when (select r from test8) = 0 then 0 else 256 end
-    + case when (select r from test9) = 0 then 0 else 512 end) = 0 then 'T' else 'F' end
-from (values (1)) dumm(x)
 ) testcase(result) UNION ALL select index as test, 'T' as result from generate_series(30,260) s(index) 
 )
 -- render the result
