@@ -11,13 +11,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Run stitching script
         run: ./stitch.sh tests/**/*.sql > acid.sql
       - name: Check it does not deviate
         run: git diff --exit-code
       - name: Upload stitched result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: acid
           path: acid.sql
